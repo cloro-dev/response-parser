@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { parseAiResponse, detectProvider, ParsedResponse, ParseOptions, AIProvider } from '../../index';
 
-export interface UseAiResponseOptions extends ParseOptions {
+export interface UseResponseOptions extends ParseOptions {
   autoDetect?: boolean;
   provider?: AIProvider;
   onProviderDetected?: (provider: AIProvider | null) => void;
   onError?: (error: Error) => void;
 }
 
-export interface UseAiResponseReturn {
+export interface UseResponseReturn {
   parsed: ParsedResponse | null;
   provider: AIProvider | null;
   isLoading: boolean;
@@ -16,20 +16,21 @@ export interface UseAiResponseReturn {
   html: string | null;
   text: string | null;
   sources: any[] | null;
-  reparse: (options?: Partial<UseAiResponseOptions>) => void;
+  reparse: (options?: Partial<UseResponseOptions>) => void;
 }
 
-export function useAiResponse(
+export function useResponse(
   response: any,
-  options: UseAiResponseOptions = {}
-): UseAiResponseReturn {
+  options: UseResponseOptions = {}
+): UseResponseReturn {
   const {
     autoDetect = true,
     provider: explicitProvider,
-    theme = 'dark',
     baseUrl,
     sanitize = true,
     includeStyles = true,
+    removeLinks = false,
+    invertColors = false,
     onProviderDetected,
     onError,
   } = options;
@@ -61,10 +62,11 @@ export function useAiResponse(
 
     try {
       const parseOptions: ParseOptions = {
-        theme,
         baseUrl,
         sanitize,
         includeStyles,
+        removeLinks,
+        invertColors,
       };
 
       let result: ParsedResponse | null;
@@ -83,9 +85,9 @@ export function useAiResponse(
     } finally {
       setIsLoading(false);
     }
-  }, [response, theme, baseUrl, sanitize, includeStyles, explicitProvider, trigger]);
+  }, [response, baseUrl, sanitize, includeStyles, removeLinks, invertColors, explicitProvider, trigger]);
 
-  const reparse = (newOptions?: Partial<UseAiResponseOptions>) => {
+  const reparse = (newOptions?: Partial<UseResponseOptions>) => {
     // Force re-parse with new options
     setTrigger((prev) => prev + 1);
   };

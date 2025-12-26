@@ -15,10 +15,11 @@ export interface ParsedResponse {
 }
 
 export interface ParseOptions {
-  theme?: 'light' | 'dark';
   baseUrl?: string;
   sanitize?: boolean;
   includeStyles?: boolean;
+  removeLinks?: boolean;
+  invertColors?: boolean;
 }
 
 export interface ProviderConfig {
@@ -33,7 +34,6 @@ export interface DetectedProvider {
 }
 
 export interface StyleOptions {
-  theme?: 'light' | 'dark';
   customCSS?: string;
   hideUI?: boolean;
   baseUrl?: string;

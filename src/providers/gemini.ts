@@ -109,8 +109,8 @@ export class GeminiProvider extends BaseProvider {
     // For Gemini, we need to extract content from WIZ_global_data for AI Overview/Mode
     // But for regular Gemini, we just inject styles
     finalHtml = this.injectStyles(finalHtml, {
-      theme: options?.theme || 'dark',
       baseUrl: options?.baseUrl || this.baseUrl,
+      customCSS: this.defaultStyles,
     });
 
     return {

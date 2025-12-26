@@ -75,8 +75,8 @@ export class CopilotProvider extends BaseProvider {
 
     // Inject styles
     finalHtml = this.injectStyles(finalHtml, {
-      theme: options?.theme || 'dark',
       baseUrl: options?.baseUrl || this.baseUrl,
+      customCSS: this.defaultStyles,
     });
 
     return {

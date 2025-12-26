@@ -1,11 +1,17 @@
 // React components
-export { AiResponseRenderer, IframeRenderer } from './components/AiResponseRenderer';
-export type { AiResponseRendererProps } from './components/AiResponseRenderer';
-export type { IframeRendererProps } from './components/IframeRenderer';
+export {
+  ResponseRenderer,
+  IframeRenderer,
+} from "./components/ResponseRenderer";
+export type { ResponseRendererProps } from "./components/ResponseRenderer";
+export type { IframeRendererProps } from "./components/IframeRenderer";
 
 // React hooks
-export { useAiResponse } from './hooks/useAiResponse';
-export type { UseAiResponseOptions, UseAiResponseReturn } from './hooks/useAiResponse';
+export { useResponse } from "./hooks/useResponse";
+export type {
+  UseResponseOptions,
+  UseResponseReturn,
+} from "./hooks/useResponse";
 
 // Re-export core types for convenience
 export type {
@@ -16,4 +22,4 @@ export type {
   DetectedProvider,
   StyleOptions,
   ContentExtraction,
-} from '../core/types';
+} from "../core/types";

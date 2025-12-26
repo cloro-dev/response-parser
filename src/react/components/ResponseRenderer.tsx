@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAiResponse, UseAiResponseOptions } from '../hooks/useAiResponse';
+import { useResponse, UseResponseOptions } from '../hooks/useResponse';
 import { IframeRenderer, IframeRendererProps } from './IframeRenderer';
 
-export interface AiResponseRendererProps extends Omit<UseAiResponseOptions, 'onError'> {
+export interface ResponseRendererProps extends Omit<UseResponseOptions, 'onError'> {
   response: any;
   className?: string;
   style?: React.CSSProperties;
@@ -13,7 +13,7 @@ export interface AiResponseRendererProps extends Omit<UseAiResponseOptions, 'onE
   onRenderComplete?: (html: string) => void;
 }
 
-export const AiResponseRenderer: React.FC<AiResponseRendererProps> = ({
+export const ResponseRenderer: React.FC<ResponseRendererProps> = ({
   response,
   className = '',
   style,
@@ -33,7 +33,7 @@ export const AiResponseRenderer: React.FC<AiResponseRendererProps> = ({
     text,
     sources,
     reparse,
-  } = useAiResponse(response, options);
+  } = useResponse(response, options);
 
   // Handle render completion
   React.useEffect(() => {
@@ -127,6 +127,9 @@ export const AiResponseRenderer: React.FC<AiResponseRendererProps> = ({
   return null;
 };
 
+ResponseRenderer.displayName = 'ResponseRenderer';
+
+
 // Export additional components
 export { IframeRenderer } from './IframeRenderer';
-export { useAiResponse } from '../hooks/useAiResponse';
+export { useResponse } from '../hooks/useResponse';

@@ -36,14 +36,12 @@ export abstract class BaseProvider {
       }
     }
 
-    // Inject styles
-    const styles = options?.customCSS
-      ? this.defaultStyles + '\n' + options.customCSS
-      : this.defaultStyles;
+    // Inject styles only if customCSS is provided
+    const styles = options?.customCSS || '';
 
-    if (styledHtml.includes('<head>')) {
+    if (styles && styledHtml.includes('<head>')) {
       styledHtml = styledHtml.replace('<head>', `<head><style>${styles}</style>`);
-    } else {
+    } else if (styles) {
       styledHtml = styledHtml.replace(
         /(<html[^>]*>)/i,
         `$1<head><style>${styles}</style></head>`,
@@ -71,6 +69,14 @@ export abstract class BaseProvider {
    */
   isFullDocument(html: string): boolean {
     return /^\s*(<html|<!DOCTYPE)/i.test(html);
+  }
+
+  /**
+   * Remove all links from HTML, keeping the text content
+   */
+  removeLinks(html: string): string {
+    // Replace anchor tags with their text content
+    return html.replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gim, '$1');
   }
 
   /**
