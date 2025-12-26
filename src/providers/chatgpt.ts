@@ -130,7 +130,7 @@ export class ChatGPTProvider extends BaseProvider {
 
     // Inject styles
     finalHtml = this.injectStyles(finalHtml, {
-      baseUrl: options?.baseUrl || this.baseUrl,
+      baseUrl: this.baseUrl,
       customCSS: this.defaultStyles,
     });
 

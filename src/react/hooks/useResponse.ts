@@ -26,9 +26,6 @@ export function useResponse(
   const {
     autoDetect = true,
     provider: explicitProvider,
-    baseUrl,
-    sanitize = true,
-    includeStyles = true,
     removeLinks = false,
     invertColors = false,
     onProviderDetected,
@@ -62,9 +59,6 @@ export function useResponse(
 
     try {
       const parseOptions: ParseOptions = {
-        baseUrl,
-        sanitize,
-        includeStyles,
         removeLinks,
         invertColors,
       };
@@ -85,7 +79,7 @@ export function useResponse(
     } finally {
       setIsLoading(false);
     }
-  }, [response, baseUrl, sanitize, includeStyles, removeLinks, invertColors, explicitProvider, trigger]);
+  }, [response, removeLinks, invertColors, explicitProvider, trigger]);
 
   const reparse = (newOptions?: Partial<UseResponseOptions>) => {
     // Force re-parse with new options

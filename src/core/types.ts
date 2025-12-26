@@ -15,9 +15,6 @@ export interface ParsedResponse {
 }
 
 export interface ParseOptions {
-  baseUrl?: string;
-  sanitize?: boolean;
-  includeStyles?: boolean;
   removeLinks?: boolean;
   invertColors?: boolean;
 }

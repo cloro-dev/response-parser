@@ -65,6 +65,9 @@ export class PerplexityProvider extends BaseProvider {
       finalHtml = `<div>${text.replace(/\n/g, "<br>")}</div>`;
     }
 
+    // Sanitize HTML
+    finalHtml = this.sanitizeHtml(finalHtml);
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
@@ -72,7 +75,7 @@ export class PerplexityProvider extends BaseProvider {
 
     // Inject styles with optional color inversion
     finalHtml = this.injectStyles(finalHtml, {
-      baseUrl: options?.baseUrl || this.baseUrl,
+      baseUrl: this.baseUrl,
       customCSS: options?.invertColors ? this.defaultStyles : "",
     });
 

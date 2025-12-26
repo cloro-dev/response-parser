@@ -80,7 +80,7 @@ export class AIModeProvider extends BaseProvider {
 
     // Inject styles to hide UI elements
     finalHtml = this.injectStyles(finalHtml, {
-      baseUrl: options?.baseUrl || this.baseUrl,
+      baseUrl: this.baseUrl,
       hideUI: true,
       customCSS: this.defaultStyles,
     });

@@ -147,7 +147,7 @@ export class AIOverviewProvider extends BaseProvider {
       finalHtml = `<!DOCTYPE html>
       <html>
         <head>
-          <base href="${options?.baseUrl || this.baseUrl}">
+          <base href="${this.baseUrl}">
           <style>${googleStyles}</style>
         </head>
         <body>
@@ -161,7 +161,7 @@ export class AIOverviewProvider extends BaseProvider {
 
       // Inject base URL and styles
       finalHtml = this.injectStyles(finalHtml, {
-        baseUrl: options?.baseUrl || this.baseUrl,
+        baseUrl: this.baseUrl,
         hideUI: true,
         customCSS: this.defaultStyles,
       });

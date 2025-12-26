@@ -70,12 +70,12 @@ export class CopilotProvider extends BaseProvider {
       finalHtml = `<div>${text.replace(/\n/g, '<br>')}</div>`;
     }
 
-    // Remove noscript tags
-    finalHtml = finalHtml.replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
+    // Sanitize HTML
+    finalHtml = this.sanitizeHtml(finalHtml);
 
     // Inject styles
     finalHtml = this.injectStyles(finalHtml, {
-      baseUrl: options?.baseUrl || this.baseUrl,
+      baseUrl: this.baseUrl,
       customCSS: this.defaultStyles,
     });
 
