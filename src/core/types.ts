@@ -17,6 +17,8 @@ export interface ParsedResponse {
 export interface ParseOptions {
   removeLinks?: boolean;
   invertColors?: boolean;
+  removeNavbar?: boolean;
+  removeFollowup?: boolean;
 }
 
 export interface ProviderConfig {

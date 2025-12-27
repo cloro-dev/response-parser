@@ -68,6 +68,16 @@ export class PerplexityProvider extends BaseProvider {
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
+    // Remove navbar if requested
+    if (options?.removeNavbar) {
+      finalHtml = this.removeNavbar(finalHtml);
+    }
+
+    // Remove followup if requested
+    if (options?.removeFollowup) {
+      finalHtml = this.removeFollowup(finalHtml);
+    }
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
@@ -87,6 +97,8 @@ export class PerplexityProvider extends BaseProvider {
         isFullDocument: this.isFullDocument(finalHtml),
         linksRemoved: options?.removeLinks || false,
         colorsInverted: options?.invertColors || false,
+        navbarRemoved: options?.removeNavbar || false,
+        followupRemoved: options?.removeFollowup || false,
       },
     };
   }

@@ -72,7 +72,9 @@ Parse an AI response with auto-detected provider.
 
 **Options:**
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
-- `invertColors`: `boolean` - Apply color inversion for dark mode, primarily for Perplexity (default: `false`)
+- `invertColors`: `boolean` - Apply color inversion for dark mode (default: `false`)
+- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`)
+- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`)
 
 **Returns:** `ParsedResponse | null`
 
@@ -94,6 +96,8 @@ Main React component for rendering AI responses.
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
+- `removeNavbar`: Remove navigation bar (default: `false`)
+- `removeFollowup`: Remove follow-up input box (default: `false`)
 - `className`: CSS class for container
 - `iframeProps`: Additional props for iframe
 - `loadingComponent`: Custom loading component
@@ -113,6 +117,8 @@ React hook for parsing AI responses.
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
+- `removeNavbar`: Remove navigation bar (default: `false`)
+- `removeFollowup`: Remove follow-up input box (default: `false`)
 - `onProviderDetected`: Callback when provider is detected
 - `onError`: Callback when error occurs
 
@@ -132,14 +138,14 @@ React hook for parsing AI responses.
 |----------|--------|----------|
 | ChatGPT | ✅ | Dark mode, sidebar hiding |
 | Gemini | ✅ | Material Design overrides |
-| Perplexity | ✅ | Color inversion for dark mode, link removal |
+| Perplexity | ✅ | Color inversion, link removal, UI element removal |
 | Copilot | ✅ | UI element hiding |
 | AI Overview | ✅ | WIZ data extraction |
 | AI Mode | ✅ | Google UI hiding |
 
 ## Examples
 
-### Remove Hyperlinks (Perplexity)
+### Remove Hyperlinks
 
 ```typescript
 import { parseAiResponse } from '@cloro-dev/response-parser';
@@ -149,13 +155,25 @@ const parsed = parseAiResponse(response, {
 });
 ```
 
-### Dark Mode for Perplexity
+### Dark Mode
 
 ```tsx
 <ResponseRenderer
-  response={perplexityResponse}
+  response={response}
   invertColors={true}  // Apply CSS filter for dark mode
   removeLinks={true}   // Optionally remove links
+/>
+```
+
+### Clean View (Remove UI Elements)
+
+```tsx
+<ResponseRenderer
+  response={response}
+  removeNavbar={true}    // Remove top navigation bar
+  removeFollowup={true}  // Remove follow-up input box
+  removeLinks={true}     // Remove all hyperlinks
+  invertColors={true}    // Dark mode
 />
 ```
 
@@ -195,11 +213,14 @@ const ErrorComponent = ({ error, retry }) => (
 - ❌ **Removed** `sanitize` option (always enabled)
 - ❌ **Removed** `includeStyles` option (always enabled)
 - ❌ **Removed** `baseUrl` option (uses provider default)
+- ✅ **Added** `removeNavbar` option (removes navigation bar)
+- ✅ **Added** `removeFollowup` option (removes follow-up input)
 
 ### Remaining Options
-Only two options remain for simple usage:
 - `removeLinks`: Remove all hyperlinks from HTML
-- `invertColors`: Apply color inversion (mainly for Perplexity)
+- `invertColors`: Apply color inversion
+- `removeNavbar`: Remove navigation bar
+- `removeFollowup`: Remove follow-up input
 
 ### Component Renaming
 - `AiResponseRenderer` → `ResponseRenderer`
