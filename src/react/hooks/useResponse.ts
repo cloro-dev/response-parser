@@ -30,6 +30,7 @@ export function useResponse(
     invertColors = false,
     removeNavbar = false,
     removeFollowup = false,
+    removeSidebar = false,
     onProviderDetected,
     onError,
   } = options;
@@ -65,6 +66,7 @@ export function useResponse(
         invertColors,
         removeNavbar,
         removeFollowup,
+        removeSidebar,
       };
 
       let result: ParsedResponse | null;

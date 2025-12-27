@@ -19,6 +19,7 @@ export interface ParseOptions {
   invertColors?: boolean;
   removeNavbar?: boolean;
   removeFollowup?: boolean;
+  removeSidebar?: boolean;
 }
 
 export interface ProviderConfig {

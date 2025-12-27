@@ -27,7 +27,7 @@ pnpm add @cloro-dev/response-parser
 ### Basic Parsing
 
 ```typescript
-import { parseAiResponse, detectProvider } from '@cloro-dev/response-parser';
+import { parseAiResponse, detectProvider } from "@cloro-dev/response-parser";
 
 // Auto-detect provider and parse
 const response = await fetchAIResponse();
@@ -41,7 +41,7 @@ console.log(parsed.text); // Plain text version
 ### React Component
 
 ```tsx
-import { ResponseRenderer } from '@cloro-dev/response-parser/react';
+import { ResponseRenderer } from "@cloro-dev/response-parser/react";
 
 function MyComponent() {
   const [aiResponse, setAiResponse] = useState(null);
@@ -54,9 +54,9 @@ function MyComponent() {
       autoDetect
       className="w-full h-96"
       iframeProps={{
-        sandbox: 'allow-popups'
+        sandbox: "allow-popups",
       }}
-      onProviderDetected={(provider) => console.log('Detected:', provider)}
+      onProviderDetected={(provider) => console.log("Detected:", provider)}
     />
   );
 }
@@ -71,10 +71,12 @@ function MyComponent() {
 Parse an AI response with auto-detected provider.
 
 **Options:**
+
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
 - `invertColors`: `boolean` - Apply color inversion for dark mode (default: `false`)
-- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`)
-- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`)
+- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`, Perplexity & Gemini)
+- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`, Perplexity & Gemini)
+- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, Gemini only)
 
 **Returns:** `ParsedResponse | null`
 
@@ -91,13 +93,14 @@ Detect the AI provider from a response.
 Main React component for rendering AI responses.
 
 **Props:**
+
 - `response`: The AI response object
 - `autoDetect`: Auto-detect provider (default: `true`)
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
-- `removeNavbar`: Remove navigation bar (default: `false`)
-- `removeFollowup`: Remove follow-up input box (default: `false`)
+- `removeNavbar`: Remove navigation bar (default: `false`, Perplexity & Gemini)
+- `removeFollowup`: Remove follow-up input box (default: `false`, Perplexity only)
 - `className`: CSS class for container
 - `iframeProps`: Additional props for iframe
 - `loadingComponent`: Custom loading component
@@ -113,16 +116,18 @@ Main React component for rendering AI responses.
 React hook for parsing AI responses.
 
 **Options:**
+
 - `autoDetect`: Auto-detect provider (default: `true`)
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
-- `removeNavbar`: Remove navigation bar (default: `false`)
-- `removeFollowup`: Remove follow-up input box (default: `false`)
+- `removeNavbar`: Remove navigation bar (default: `false`, Perplexity & Gemini)
+- `removeFollowup`: Remove follow-up input box (default: `false`, Perplexity only)
 - `onProviderDetected`: Callback when provider is detected
 - `onError`: Callback when error occurs
 
 **Returns:**
+
 - `parsed`: Parsed response object
 - `provider`: Detected provider
 - `isLoading`: Loading state
@@ -134,24 +139,24 @@ React hook for parsing AI responses.
 
 ## Supported Providers
 
-| Provider | Status | Features |
-|----------|--------|----------|
-| ChatGPT | ✅ | Dark mode, sidebar hiding |
-| Gemini | ✅ | Material Design overrides |
-| Perplexity | ✅ | Color inversion, link removal, UI element removal |
-| Copilot | ✅ | UI element hiding |
-| AI Overview | ✅ | WIZ data extraction |
-| AI Mode | ✅ | Google UI hiding |
+| Provider    | Status | Features                                             |
+| ----------- | ------ | ---------------------------------------------------- |
+| ChatGPT     | ✅     | Dark mode, sidebar hiding                            |
+| Gemini      | ✅     | Material Design overrides, navbar removal             |
+| Perplexity  | ✅     | Color inversion, link removal, UI element removal      |
+| Copilot     | ✅     | UI element hiding                                    |
+| AI Overview | ✅     | WIZ data extraction                                  |
+| AI Mode     | ✅     | Google UI hiding                                     |
 
 ## Examples
 
 ### Remove Hyperlinks
 
 ```typescript
-import { parseAiResponse } from '@cloro-dev/response-parser';
+import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(response, {
-  removeLinks: true  // Removes all <a> tags, keeps text
+  removeLinks: true, // Removes all <a> tags, keeps text
 });
 ```
 
@@ -160,8 +165,8 @@ const parsed = parseAiResponse(response, {
 ```tsx
 <ResponseRenderer
   response={response}
-  invertColors={true}  // Apply CSS filter for dark mode
-  removeLinks={true}   // Optionally remove links
+  invertColors={true} // Apply CSS filter for dark mode
+  removeLinks={true} // Optionally remove links
 />
 ```
 
@@ -170,20 +175,20 @@ const parsed = parseAiResponse(response, {
 ```tsx
 <ResponseRenderer
   response={response}
-  removeNavbar={true}    // Remove top navigation bar
-  removeFollowup={true}  // Remove follow-up input box
-  removeLinks={true}     // Remove all hyperlinks
-  invertColors={true}    // Dark mode
+  removeNavbar={true} // Remove top navigation bar
+  removeFollowup={true} // Remove follow-up input box
+  removeLinks={true} // Remove all hyperlinks
+  invertColors={true} // Dark mode
 />
 ```
 
 ### Manual Provider Specification
 
 ```typescript
-import { parseAiResponse, AIProvider } from '@cloro-dev/response-parser';
+import { parseAiResponse, AIProvider } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(response, {
-  provider: 'CHATGPT'
+  provider: "CHATGPT",
 });
 ```
 
@@ -197,15 +202,13 @@ const ErrorComponent = ({ error, retry }) => (
   </div>
 );
 
-<ResponseRenderer
-  response={response}
-  errorComponent={ErrorComponent}
-/>
+<ResponseRenderer response={response} errorComponent={ErrorComponent} />;
 ```
 
 ## What's Changed in v0.1.3
 
 ### Simplified API
+
 - ✅ **Always sanitizes** HTML by default (removes scripts for security)
 - ✅ **Always includes** provider-specific styles
 - ✅ **Always uses** provider's base URL for relative links
@@ -217,12 +220,14 @@ const ErrorComponent = ({ error, retry }) => (
 - ✅ **Added** `removeFollowup` option (removes follow-up input)
 
 ### Remaining Options
+
 - `removeLinks`: Remove all hyperlinks from HTML
 - `invertColors`: Apply color inversion
-- `removeNavbar`: Remove navigation bar
-- `removeFollowup`: Remove follow-up input
+- `removeNavbar`: Remove navigation bar (Perplexity & Gemini)
+- `removeFollowup`: Remove follow-up input (Perplexity only)
 
 ### Component Renaming
+
 - `AiResponseRenderer` → `ResponseRenderer`
 - `useAiResponse` → `useResponse`
 

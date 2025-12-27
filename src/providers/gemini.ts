@@ -5,48 +5,8 @@ export class GeminiProvider extends BaseProvider {
   readonly name: AIProvider = 'GEMINI';
   readonly baseUrl = 'https://gemini.google.com';
 
-  readonly defaultStyles = `
-    /* Gemini Dark Mode Variable Overrides */
-    :root {
-      --gem-sys-color--surface: #131314 !important;
-      --gem-sys-color--surface-container: #1e1f20 !important;
-      --gem-sys-color--on-surface: #e3e3e3 !important;
-      --bard-color-synthetic--chat-window-surface: #131314 !important;
-      --bard-color-surface-dim-tmp: #131314 !important;
-    }
-
-    /* UI hiding - Gemini */
-    bard-sidenav, mat-sidenav, .mat-drawer-backdrop, .side-nav-menu-button,
-
-    /* Gemini "About Gemini" footer/navigation block */
-    .gb_5a, .gb_5c, .gb_5d, .gb_5e,
-    .gb_Uc, .gb_Vc, .gb_Wc,
-    a[href*="about"],
-    a[href*="subscriptions"],
-    a[href*="business"],
-    div[class*="gb_5"],
-    .gb_Pd, .gb_Qd, .gb_Rd,
-    .gb_Sd, .gb_Td, .gb_Ud, .gb_Vd,
-    [aria-label*="About"],
-    [aria-label*="Gemini App"],
-    [aria-label*="Subscriptions"],
-    [aria-label*="For Business"],
-    *:contains("About Gemini"),
-    *:contains("Gemini App"),
-    *:contains("Subscriptions"),
-    *:contains("For Business") {
-      display: none !important;
-    }
-
-    /* General Layout */
-    main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-
-    /* Force Dark Mode on Body and Gemini Containers */
-    body, .content-container, chat-app, .main-content, .chat-container {
-      background-color: #131314 !important;
-      color: #e3e3e3 !important;
-    }
-  `;
+  readonly defaultStyles = ``
+  ;
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -89,22 +49,69 @@ export class GeminiProvider extends BaseProvider {
     return { html, text, sources };
   }
 
+  /**
+   * Remove Gemini navbar from HTML
+   */
+  removeNavbar(html: string): string {
+    let cleaned = html;
+
+    // Remove the Google navbar with boqOnegoogleliteOgbOneGoogleBar class
+    cleaned = cleaned.replace(/<div[^>]*class="[^"]*boqOnegoogleliteOgbOneGoogleBar[^"]*"[^>]*>.*?<\/div><\/div><\/div><\/div>/gis, '');
+
+    // Remove side-nav-menu-button (hamburger menu)
+    cleaned = cleaned.replace(/<div[^>]*class="[^"]*side-nav-menu-button[^"]*"[^>]*>.*?<\/div>/gis, '');
+
+    // Remove top-bar-actions (About Gemini, Gemini App, Subscriptions, For Business links)
+    cleaned = cleaned.replace(/<top-bar-actions[^>]*>.*?<\/top-bar-actions>/gis, '');
+
+    // Remove desktop-ogb-buffer
+    cleaned = cleaned.replace(/<div[^>]*class="[^"]*desktop-ogb-buffer[^"]*"[^>]*><\/div>/gis, '');
+
+    return cleaned;
+  }
+
+  /**
+   * Remove Gemini follow-up input box from HTML
+   */
+  removeFollowup(html: string): string {
+    // Remove input-container (text input, upload button, send button, disclaimer)
+    return html.replace(/<input-container[^>]*>.*?<\/input-container>/gis, '');
+  }
+
+  /**
+   * Remove Gemini sidebar from HTML
+   */
+  removeSidebar(html: string): string {
+    // Remove bard-sidenav element
+    return html.replace(/<bard-sidenav[^>]*>.*?<\/bard-sidenav>/gis, '');
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text, sources } = this.extractContent(response);
 
-    if (!html && !text) {
-      throw new Error('No content found in Gemini response');
+    if (!html) {
+      throw new Error('No HTML content found in Gemini response');
     }
 
-    let finalHtml = html || '';
-
-    // If we only have text, create simple HTML
-    if (!finalHtml && text) {
-      finalHtml = `<div>${text.replace(/\n/g, '<br>')}</div>`;
-    }
+    let finalHtml = html;
 
     // Sanitize HTML (remove scripts and noscript)
     finalHtml = this.sanitizeHtml(finalHtml);
+
+    // Remove navbar if requested
+    if (options?.removeNavbar) {
+      finalHtml = this.removeNavbar(finalHtml);
+    }
+
+    // Remove followup input if requested
+    if (options?.removeFollowup) {
+      finalHtml = this.removeFollowup(finalHtml);
+    }
+
+    // Remove sidebar if requested
+    if (options?.removeSidebar) {
+      finalHtml = this.removeSidebar(finalHtml);
+    }
 
     // For Gemini, we need to extract content from WIZ_global_data for AI Overview/Mode
     // But for regular Gemini, we just inject styles
@@ -120,6 +127,9 @@ export class GeminiProvider extends BaseProvider {
       sources,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        navbarRemoved: options?.removeNavbar || false,
+        followupRemoved: options?.removeFollowup || false,
+        sidebarRemoved: options?.removeSidebar || false,
       },
     };
   }

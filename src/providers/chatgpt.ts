@@ -114,16 +114,11 @@ export class ChatGPTProvider extends BaseProvider {
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
-    if (!html && !text) {
-      throw new Error('No content found in ChatGPT response');
+    if (!html) {
+      throw new Error('No HTML content found in ChatGPT response');
     }
 
-    let finalHtml = html || '';
-
-    // If we only have text, create simple HTML
-    if (!finalHtml && text) {
-      finalHtml = `<div>${text.replace(/\n/g, '<br>')}</div>`;
-    }
+    let finalHtml = html;
 
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);

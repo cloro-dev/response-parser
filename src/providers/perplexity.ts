@@ -51,19 +51,32 @@ export class PerplexityProvider extends BaseProvider {
     return { html, text };
   }
 
+  /**
+   * Remove Perplexity navbar from HTML
+   */
+  removeNavbar(html: string): string {
+    // Remove navbar by targeting the unique @container/header class
+    // Matches from the navbar opening div through the border divider at the bottom
+    return html.replace(/<div[^>]*class="[^"]*@container\/header[^"]*"[^>]*>.*?<div[^>]*class="[^"]*absolute bottom-0 inset-x-0 border-b[^"]*"[^>]*><\/div>/gis, '');
+  }
+
+  /**
+   * Remove Perplexity followup input from HTML
+   */
+  removeFollowup(html: string): string {
+    // Remove the fixed positioned followup container
+    // Matches from erp-sidecar:fixed div through 4 closing divs
+    return html.replace(/<div[^>]*class="[^"]*erp-sidecar:fixed[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
-    if (!html && !text) {
-      throw new Error("No content found in Perplexity response");
+    if (!html) {
+      throw new Error("No HTML content found in Perplexity response");
     }
 
-    let finalHtml = html || "";
-
-    // If we only have text, create simple HTML
-    if (!finalHtml && text) {
-      finalHtml = `<div>${text.replace(/\n/g, "<br>")}</div>`;
-    }
+    let finalHtml = html;
 
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
