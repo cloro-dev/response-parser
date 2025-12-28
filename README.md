@@ -74,9 +74,9 @@ Parse an AI response with auto-detected provider.
 
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
 - `invertColors`: `boolean` - Apply color inversion for dark mode (default: `false`)
-- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`, Perplexity & Gemini)
-- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`, Perplexity & Gemini)
-- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, Gemini only)
+- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`, Perplexity, Gemini & Copilot)
+- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`, Perplexity, Gemini & Copilot)
+- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, Gemini & Copilot)
 
 **Returns:** `ParsedResponse | null`
 
