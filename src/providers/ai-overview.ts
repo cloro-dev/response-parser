@@ -154,10 +154,20 @@ export class AIOverviewProvider extends BaseProvider {
           ${text}
         </body>
       </html>`;
+
+      // Remove links if requested
+      if (options?.removeLinks) {
+        finalHtml = this.removeLinks(finalHtml);
+      }
     } else {
       // Use the original HTML but clean it
       finalHtml = html || '';
       finalHtml = this.sanitizeHtml(finalHtml);
+
+      // Remove links if requested
+      if (options?.removeLinks) {
+        finalHtml = this.removeLinks(finalHtml);
+      }
 
       // Inject base URL and styles
       finalHtml = this.injectStyles(finalHtml, {
@@ -175,6 +185,7 @@ export class AIOverviewProvider extends BaseProvider {
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
         hasWizData: !!text && !html,
+        linksRemoved: options?.removeLinks || false,
       },
     };
   }

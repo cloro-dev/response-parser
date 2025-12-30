@@ -5,8 +5,7 @@ export class GeminiProvider extends BaseProvider {
   readonly name: AIProvider = 'GEMINI';
   readonly baseUrl = 'https://gemini.google.com';
 
-  readonly defaultStyles = ``
-  ;
+  readonly defaultStyles = '';
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -113,6 +112,11 @@ export class GeminiProvider extends BaseProvider {
       finalHtml = this.removeSidebar(finalHtml);
     }
 
+    // Remove links if requested
+    if (options?.removeLinks) {
+      finalHtml = this.removeLinks(finalHtml);
+    }
+
     // For Gemini, we need to extract content from WIZ_global_data for AI Overview/Mode
     // But for regular Gemini, we just inject styles
     finalHtml = this.injectStyles(finalHtml, {
@@ -130,6 +134,7 @@ export class GeminiProvider extends BaseProvider {
         navbarRemoved: options?.removeNavbar || false,
         followupRemoved: options?.removeFollowup || false,
         sidebarRemoved: options?.removeSidebar || false,
+        linksRemoved: options?.removeLinks || false,
       },
     };
   }

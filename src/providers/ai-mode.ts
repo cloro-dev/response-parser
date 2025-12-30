@@ -73,6 +73,11 @@ export class AIModeProvider extends BaseProvider {
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
+    // Remove links if requested
+    if (options?.removeLinks) {
+      finalHtml = this.removeLinks(finalHtml);
+    }
+
     // Inject styles to hide UI elements
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
@@ -86,6 +91,7 @@ export class AIModeProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        linksRemoved: options?.removeLinks || false,
       },
     };
   }

@@ -5,8 +5,7 @@ export class CopilotProvider extends BaseProvider {
   readonly name: AIProvider = 'COPILOT';
   readonly baseUrl = 'https://copilot.microsoft.com';
 
-  readonly defaultStyles = ``
-  ;
+  readonly defaultStyles = '';
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -115,6 +114,11 @@ export class CopilotProvider extends BaseProvider {
       finalHtml = this.removeSidebar(finalHtml);
     }
 
+    // Remove links if requested
+    if (options?.removeLinks) {
+      finalHtml = this.removeLinks(finalHtml);
+    }
+
     // Inject styles
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
@@ -130,6 +134,7 @@ export class CopilotProvider extends BaseProvider {
         navbarRemoved: options?.removeNavbar || false,
         followupRemoved: options?.removeFollowup || false,
         sidebarRemoved: options?.removeSidebar || false,
+        linksRemoved: options?.removeLinks || false,
       },
     };
   }
