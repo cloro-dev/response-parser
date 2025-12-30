@@ -28,8 +28,8 @@ export function useResponse(
     provider: explicitProvider,
     removeLinks = false,
     invertColors = false,
-    removeNavbar = false,
-    removeFollowup = false,
+    removeHeader = false,
+    removeFooter = false,
     removeSidebar = false,
     onProviderDetected,
     onError,
@@ -64,8 +64,8 @@ export function useResponse(
       const parseOptions: ParseOptions = {
         removeLinks,
         invertColors,
-        removeNavbar,
-        removeFollowup,
+        removeHeader,
+        removeFooter,
         removeSidebar,
       };
 
@@ -85,7 +85,7 @@ export function useResponse(
     } finally {
       setIsLoading(false);
     }
-  }, [response, removeLinks, invertColors, removeNavbar, removeFollowup, explicitProvider, trigger]);
+  }, [response, removeLinks, invertColors, removeHeader, removeFooter, explicitProvider, trigger]);
 
   const reparse = (newOptions?: Partial<UseResponseOptions>) => {
     // Force re-parse with new options

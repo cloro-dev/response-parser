@@ -10,13 +10,6 @@ export class PerplexityProvider extends BaseProvider {
   readonly name: AIProvider = "PERPLEXITY";
   readonly baseUrl = "https://www.perplexity.ai";
 
-  readonly defaultStyles = `
-    html {
-      filter: invert(1) hue-rotate(180deg);
-      background-color: white !important;
-    }
-  `;
-
   extractContent(response: any): ContentExtraction {
     let html = "";
     let text = "";
@@ -52,18 +45,18 @@ export class PerplexityProvider extends BaseProvider {
   }
 
   /**
-   * Remove Perplexity navbar from HTML
+   * Remove Perplexity header/navbar from HTML
    */
-  removeNavbar(html: string): string {
+  removeHeader(html: string): string {
     // Remove navbar by targeting the unique @container/header class
     // Matches from the navbar opening div through the border divider at the bottom
     return html.replace(/<div[^>]*class="[^"]*@container\/header[^"]*"[^>]*>.*?<div[^>]*class="[^"]*absolute bottom-0 inset-x-0 border-b[^"]*"[^>]*><\/div>/gis, '');
   }
 
   /**
-   * Remove Perplexity followup input from HTML
+   * Remove Perplexity footer/followup input from HTML
    */
-  removeFollowup(html: string): string {
+  removeFooter(html: string): string {
     // Remove the fixed positioned followup container
     // Matches from erp-sidecar:fixed div through 4 closing divs
     return html.replace(/<div[^>]*class="[^"]*erp-sidecar:fixed[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
@@ -78,17 +71,20 @@ export class PerplexityProvider extends BaseProvider {
 
     let finalHtml = html;
 
+    const removeHeader = options?.removeHeader ?? false;
+    const removeFooter = options?.removeFooter ?? false;
+
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
-    // Remove navbar if requested
-    if (options?.removeNavbar) {
-      finalHtml = this.removeNavbar(finalHtml);
+    // Remove header if requested
+    if (removeHeader) {
+      finalHtml = this.removeHeader(finalHtml);
     }
 
-    // Remove followup if requested
-    if (options?.removeFollowup) {
-      finalHtml = this.removeFollowup(finalHtml);
+    // Remove footer if requested
+    if (removeFooter) {
+      finalHtml = this.removeFooter(finalHtml);
     }
 
     // Remove links if requested
@@ -97,9 +93,16 @@ export class PerplexityProvider extends BaseProvider {
     }
 
     // Inject styles with optional color inversion
+    const colorInversionStyles = options?.invertColors ? `
+      html {
+        filter: invert(1) hue-rotate(180deg);
+        background-color: white !important;
+      }
+    ` : "";
+
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: options?.invertColors ? this.defaultStyles : "",
+      customCSS: colorInversionStyles,
     });
 
     return {
@@ -110,8 +113,8 @@ export class PerplexityProvider extends BaseProvider {
         isFullDocument: this.isFullDocument(finalHtml),
         linksRemoved: options?.removeLinks || false,
         colorsInverted: options?.invertColors || false,
-        navbarRemoved: options?.removeNavbar || false,
-        followupRemoved: options?.removeFollowup || false,
+        headerRemoved: removeHeader,
+        footerRemoved: removeFooter,
       },
     };
   }

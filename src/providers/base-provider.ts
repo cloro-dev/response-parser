@@ -3,7 +3,6 @@ import { AIProvider, ParsedResponse, ParseOptions, StyleOptions, ContentExtracti
 export abstract class BaseProvider {
   abstract readonly name: AIProvider;
   abstract readonly baseUrl: string;
-  abstract readonly defaultStyles: string;
 
   /**
    * Parse an AI response and return structured content

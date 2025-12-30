@@ -5,27 +5,6 @@ export class AIModeProvider extends BaseProvider {
   readonly name: AIProvider = 'AIMODE';
   readonly baseUrl = 'https://www.google.com';
 
-  readonly defaultStyles = `
-    /* UI hiding - Google Search (AI Mode) */
-    header, #header, #searchform, .sfbg, #appbar,
-    div[role="navigation"], #leftnav, #sidetogether,
-    [role="banner"], .Fgvgjc, #hdtb, .hdtb-msb,
-    footer, #footer, .fbar,
-    .pdp-nav, [aria-label="Main menu"], .gb_Td, .gb_L,
-
-    /* Specific AI Mode Selectors found in analysis */
-    .DZ13He, /* Main sticky top bar */
-    .wYq63b, /* Accessibility links bar */
-    .eT9Cje, /* History/New Search buttons */
-    .bNg8Rb, /* Hidden H1 headers */
-    .S6VXfe, /* Accessibility container */
-    .Lu57id  /* Potential other top bar */ {
-      display: none !important;
-    }
-
-    /* General Layout */
-    main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-  `;
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -61,6 +40,30 @@ export class AIModeProvider extends BaseProvider {
     return { html, text };
   }
 
+  /**
+   * Remove Google Search header/navbar from HTML
+   */
+  removeHeader(html: string): string {
+    // Remove header elements via CSS injection
+    return html;
+  }
+
+  /**
+   * Remove Google Search footer from HTML
+   */
+  removeFooter(html: string): string {
+    // Remove footer elements via CSS injection
+    return html;
+  }
+
+  /**
+   * Remove Google Search sidebar from HTML
+   */
+  removeSidebar(html: string): string {
+    // Remove sidebar elements via CSS injection
+    return html;
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
@@ -70,19 +73,80 @@ export class AIModeProvider extends BaseProvider {
 
     let finalHtml = html;
 
+    // For AI Mode, default to removing header and footer for cleaner display
+    const removeHeader = options?.removeHeader ?? true;
+    const removeFooter = options?.removeFooter ?? true;
+
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
+
+    // Remove header if requested
+    if (removeHeader) {
+      finalHtml = this.removeHeader(finalHtml);
+    }
+
+    // Remove footer if requested
+    if (removeFooter) {
+      finalHtml = this.removeFooter(finalHtml);
+    }
+
+    // Remove sidebar if requested
+    if (options?.removeSidebar) {
+      finalHtml = this.removeSidebar(finalHtml);
+    }
 
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Inject styles to hide UI elements
+    // Build CSS based on options
+    let stylesToInject = "";
+
+    // Always inject general layout
+    stylesToInject += `
+      /* General Layout */
+      main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+    `;
+
+    // Header removal styles
+    if (removeHeader) {
+      stylesToInject += `
+        /* Header hiding */
+        header, #header, #searchform, .sfbg, #appbar,
+        div[role="navigation"], #leftnav, #sidetogether,
+        [role="banner"], .Fgvgjc, #hdtb, .hdtb-msb,
+        .DZ13He, .wYq63b, .eT9Cje, .bNg8Rb, .S6VXfe, .Lu57id {
+          display: none !important;
+        }
+      `;
+    }
+
+    // Sidebar removal styles
+    if (options?.removeSidebar) {
+      stylesToInject += `
+        /* Sidebar hiding */
+        #leftnav, #sidetogether {
+          display: none !important;
+        }
+      `;
+    }
+
+    // Footer removal styles
+    if (removeFooter) {
+      stylesToInject += `
+        /* Footer hiding */
+        footer, #footer, .fbar,
+        .pdp-nav, [aria-label="Main menu"], .gb_Td, .gb_L {
+          display: none !important;
+        }
+      `;
+    }
+
+    // Inject base URL and styles
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      hideUI: true,
-      customCSS: this.defaultStyles,
+      customCSS: stylesToInject,
     });
 
     return {
@@ -91,8 +155,12 @@ export class AIModeProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        headerRemoved: removeHeader,
+        footerRemoved: removeFooter,
+        sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
       },
     };
   }
+
 }

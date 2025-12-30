@@ -5,7 +5,6 @@ export class CopilotProvider extends BaseProvider {
   readonly name: AIProvider = 'COPILOT';
   readonly baseUrl = 'https://copilot.microsoft.com';
 
-  readonly defaultStyles = '';
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -42,9 +41,9 @@ export class CopilotProvider extends BaseProvider {
   }
 
   /**
-   * Remove Copilot navbar (header) from HTML
+   * Remove Copilot header/navbar from HTML
    */
-  removeNavbar(html: string): string {
+  removeHeader(html: string): string {
     let cleaned = html;
 
     // Remove backstage-chats (hidden navbar element)
@@ -54,9 +53,9 @@ export class CopilotProvider extends BaseProvider {
   }
 
   /**
-   * Remove Copilot followup input box from HTML
+   * Remove Copilot footer/followup input box from HTML
    */
-  removeFollowup(html: string): string {
+  removeFooter(html: string): string {
     let cleaned = html;
 
     // Remove the composer (input box at bottom)
@@ -96,17 +95,20 @@ export class CopilotProvider extends BaseProvider {
 
     let finalHtml = html;
 
+    const removeHeader = options?.removeHeader ?? false;
+    const removeFooter = options?.removeFooter ?? false;
+
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
-    // Remove navbar if requested
-    if (options?.removeNavbar) {
-      finalHtml = this.removeNavbar(finalHtml);
+    // Remove header if requested
+    if (removeHeader) {
+      finalHtml = this.removeHeader(finalHtml);
     }
 
-    // Remove followup input if requested
-    if (options?.removeFollowup) {
-      finalHtml = this.removeFollowup(finalHtml);
+    // Remove footer if requested
+    if (removeFooter) {
+      finalHtml = this.removeFooter(finalHtml);
     }
 
     // Remove sidebar if requested
@@ -122,7 +124,7 @@ export class CopilotProvider extends BaseProvider {
     // Inject styles
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: this.defaultStyles,
+      customCSS: "",
     });
 
     return {
@@ -131,8 +133,8 @@ export class CopilotProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
-        navbarRemoved: options?.removeNavbar || false,
-        followupRemoved: options?.removeFollowup || false,
+        headerRemoved: removeHeader,
+        footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
       },

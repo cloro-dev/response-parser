@@ -17,15 +17,14 @@ export interface ParsedResponse {
 export interface ParseOptions {
   removeLinks?: boolean;
   invertColors?: boolean;
-  removeNavbar?: boolean;
-  removeFollowup?: boolean;
+  removeHeader?: boolean;
+  removeFooter?: boolean;
   removeSidebar?: boolean;
 }
 
 export interface ProviderConfig {
   name: AIProvider;
   baseUrl: string;
-  defaultStyles: string;
 }
 
 export interface DetectedProvider {

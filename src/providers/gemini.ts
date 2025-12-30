@@ -5,7 +5,6 @@ export class GeminiProvider extends BaseProvider {
   readonly name: AIProvider = 'GEMINI';
   readonly baseUrl = 'https://gemini.google.com';
 
-  readonly defaultStyles = '';
 
   extractContent(response: any): ContentExtraction {
     let html = '';
@@ -49,9 +48,9 @@ export class GeminiProvider extends BaseProvider {
   }
 
   /**
-   * Remove Gemini navbar from HTML
+   * Remove Gemini header/navbar from HTML
    */
-  removeNavbar(html: string): string {
+  removeHeader(html: string): string {
     let cleaned = html;
 
     // Remove the Google navbar with boqOnegoogleliteOgbOneGoogleBar class
@@ -70,9 +69,9 @@ export class GeminiProvider extends BaseProvider {
   }
 
   /**
-   * Remove Gemini follow-up input box from HTML
+   * Remove Gemini footer/follow-up input box from HTML
    */
-  removeFollowup(html: string): string {
+  removeFooter(html: string): string {
     // Remove input-container (text input, upload button, send button, disclaimer)
     return html.replace(/<input-container[^>]*>.*?<\/input-container>/gis, '');
   }
@@ -94,17 +93,20 @@ export class GeminiProvider extends BaseProvider {
 
     let finalHtml = html;
 
+    const removeHeader = options?.removeHeader ?? false;
+    const removeFooter = options?.removeFooter ?? false;
+
     // Sanitize HTML (remove scripts and noscript)
     finalHtml = this.sanitizeHtml(finalHtml);
 
-    // Remove navbar if requested
-    if (options?.removeNavbar) {
-      finalHtml = this.removeNavbar(finalHtml);
+    // Remove header if requested
+    if (removeHeader) {
+      finalHtml = this.removeHeader(finalHtml);
     }
 
-    // Remove followup input if requested
-    if (options?.removeFollowup) {
-      finalHtml = this.removeFollowup(finalHtml);
+    // Remove footer if requested
+    if (removeFooter) {
+      finalHtml = this.removeFooter(finalHtml);
     }
 
     // Remove sidebar if requested
@@ -121,7 +123,7 @@ export class GeminiProvider extends BaseProvider {
     // But for regular Gemini, we just inject styles
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: this.defaultStyles,
+      customCSS: "",
     });
 
     return {
@@ -131,8 +133,8 @@ export class GeminiProvider extends BaseProvider {
       sources,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
-        navbarRemoved: options?.removeNavbar || false,
-        followupRemoved: options?.removeFollowup || false,
+        headerRemoved: removeHeader,
+        footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
       },

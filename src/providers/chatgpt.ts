@@ -10,7 +10,6 @@ export class ChatGPTProvider extends BaseProvider {
   readonly name: AIProvider = "CHATGPT";
   readonly baseUrl = "https://chatgpt.com";
 
-  readonly defaultStyles = "";
 
   extractContent(response: any): ContentExtraction {
     let html = "";
@@ -83,9 +82,9 @@ export class ChatGPTProvider extends BaseProvider {
   }
 
   /**
-   * Remove ChatGPT followup input box from HTML
+   * Remove ChatGPT footer/composer from HTML
    */
-  removeFollowup(html: string): string {
+  removeFooter(html: string): string {
     let cleaned = html;
 
     // Remove the thread-bottom-container (scroll button container)
@@ -136,6 +135,8 @@ export class ChatGPTProvider extends BaseProvider {
 
     let finalHtml = html;
 
+    const removeFooter = options?.removeFooter ?? false;
+
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
@@ -144,9 +145,9 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeSidebar(finalHtml);
     }
 
-    // Remove followup input if requested
-    if (options?.removeFollowup) {
-      finalHtml = this.removeFollowup(finalHtml);
+    // Remove footer if requested
+    if (removeFooter) {
+      finalHtml = this.removeFooter(finalHtml);
     }
 
     // Remove links if requested
@@ -197,7 +198,7 @@ export class ChatGPTProvider extends BaseProvider {
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
         sidebarRemoved: options?.removeSidebar || false,
-        followupRemoved: options?.removeFollowup || false,
+        footerRemoved: removeFooter,
         linksRemoved: options?.removeLinks || false,
         colorsInverted: options?.invertColors || false,
       },
