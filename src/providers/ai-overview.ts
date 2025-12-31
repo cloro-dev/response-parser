@@ -10,7 +10,6 @@ export class AIOverviewProvider extends BaseProvider {
   readonly name: AIProvider = "AIOVERVIEW";
   readonly baseUrl = "https://www.google.com";
 
-
   extractContent(response: any): ContentExtraction {
     let html = "";
     let sources: any[] = [];
@@ -109,18 +108,36 @@ export class AIOverviewProvider extends BaseProvider {
     // Build CSS based on options
     let stylesToInject = "";
 
-    // Always inject general layout
-    stylesToInject += ``;
-
     // Add background and text colors based on invertColors option
     if (options?.invertColors) {
-      stylesToInject += ``;
+      stylesToInject += `
+        /* Dark theme */
+        html, body, main, article, footer, form {
+          background-color: #131314 !important;
+          color: #e3e3e3 !important;
+        }
+      `;
     } else {
       stylesToInject += `
-        /* Light theme */
-        html, body, main, article {
+        /* Light theme - force all backgrounds to white */
+        *, div, span, p, a, li, td, th, section, article, main, aside, nav, header, footer {
           background-color: #ffffff !important;
+        }
+
+        html, body, main, article, footer, form {
+          background-color: #ffffff !important;
+        }
+
+        /* Force dark text color on all text elements */
+        *, p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, strong, b, em, i, a {
           color: #1a1a1a !important;
+        }
+
+        /* Force borders and dividers to be visible */
+        hr, [class*="border"], [class*="divider"], [class*="separator"],
+        [class*="border-t"], [class*="border-b"], [class*="border-l"], [class*="border-r"],
+        table, tr, td, th {
+          border-color: #d4d4d4 !important;
         }
       `;
     }

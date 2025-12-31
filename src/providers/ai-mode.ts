@@ -1,14 +1,18 @@
-import { BaseProvider } from './base-provider';
-import { AIProvider, ParsedResponse, ParseOptions, ContentExtraction } from '../core/types';
+import { BaseProvider } from "./base-provider";
+import {
+  AIProvider,
+  ParsedResponse,
+  ParseOptions,
+  ContentExtraction,
+} from "../core/types";
 
 export class AIModeProvider extends BaseProvider {
-  readonly name: AIProvider = 'AIMODE';
-  readonly baseUrl = 'https://www.google.com';
-
+  readonly name: AIProvider = "AIMODE";
+  readonly baseUrl = "https://www.google.com";
 
   extractContent(response: any): ContentExtraction {
-    let html = '';
-    let text = '';
+    let html = "";
+    let text = "";
 
     // Handle nested structure
     let dataToCheck = response;
@@ -17,17 +21,17 @@ export class AIModeProvider extends BaseProvider {
     }
 
     // Extract content
-    if (typeof dataToCheck === 'string') {
-      if (dataToCheck.trim().startsWith('<') && dataToCheck.includes('>')) {
+    if (typeof dataToCheck === "string") {
+      if (dataToCheck.trim().startsWith("<") && dataToCheck.includes(">")) {
         html = dataToCheck;
       } else {
         text = dataToCheck;
       }
-    } else if (typeof dataToCheck === 'object' && dataToCheck !== null) {
+    } else if (typeof dataToCheck === "object" && dataToCheck !== null) {
       if (dataToCheck.html) {
         html = dataToCheck.html;
       } else if (dataToCheck.content) {
-        if (dataToCheck.content.trim().startsWith('<')) {
+        if (dataToCheck.content.trim().startsWith("<")) {
           html = dataToCheck.content;
         } else {
           text = dataToCheck.content;
@@ -44,31 +48,99 @@ export class AIModeProvider extends BaseProvider {
    * Remove Google Search header/navbar from HTML
    */
   removeHeader(html: string): string {
-    // Remove header elements via CSS injection
-    return html;
+    let cleaned = html;
+
+    // Remove the AI Mode filter/header bar
+    // Starts with <div jsname="oEQ3x" class="DZ13He YNk70c EjQTId">
+    // Contains the Filters and Topics navigation (AI Mode, All, Images, Videos, News, More)
+    // Ends with closing divs after <hr class="e9c7U">
+    cleaned = cleaned.replace(
+      /<div[^>]*jsname="oEQ3x"[^>]*class="[^"]*DZ13He[^"]*"[^>]*>.*?<hr class="e9c7U">.*?<\/div><\/div><\/div><\/div><\/div>/gis,
+      ""
+    );
+
+    return cleaned;
   }
 
   /**
    * Remove Google Search footer from HTML
    */
   removeFooter(html: string): string {
-    // Remove footer elements via CSS injection
-    return html;
+    let cleaned = html;
+
+    // Remove the AI Mode input bar/footer
+    // Target the most unique identifier: data-xid="aim-mars-input-plate"
+    // This element is deeply nested, so we need to match many closing divs
+    cleaned = cleaned.replace(
+      /<div[^>]*data-xid="aim-mars-input-plate"[^>]*>[\s\S]*?<\/div><\/div><\/div><\/div><\/div>/gis,
+      ""
+    );
+
+    // Fallback: Target by jscontroller P5gZDb which wraps the input plate
+    cleaned = cleaned.replace(
+      /<div[^>]*jscontroller="P5gZDb"[^>]*>[\s\S]*?<\/div><\/div><\/div>/gis,
+      ""
+    );
+
+    // Fallback: Target the t0ITR container
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*t0ITR hh3ttd[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
+      ""
+    );
+
+    // Fallback: Target outer y4VEUd vve6Ce wrapper
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*y4VEUd vve6Ce[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
+      ""
+    );
+
+    return cleaned;
   }
 
   /**
    * Remove Google Search sidebar from HTML
    */
   removeSidebar(html: string): string {
-    // Remove sidebar elements via CSS injection
-    return html;
+    let cleaned = html;
+
+    // Remove the AI Mode history panel/slide-over
+    // Target by aria-label and class
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*ho072b[^"]*"[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?<\/div><\/div><\/div><\/div><\/div><\/div>/gis,
+      ""
+    );
+
+    // Remove the floating action button (FAB) with "Start new search" and "AI Mode history"
+    // Target by jsname and class, contains OEwhSe wrapper
+    cleaned = cleaned.replace(
+      /<div[^>]*jsname="NlVIob"[^>]*class="[^"]*qEn1od[^"]*"[^>]*>[\s\S]*?<\/div><\/div><\/div>/gis,
+      ""
+    );
+
+    // Fallback: Target by inner class OEwhSe
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*OEwhSe[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
+      ""
+    );
+
+    // Fallback: Target buttons with aria-label
+    cleaned = cleaned.replace(
+      /<button[^>]*aria-label="Start new search"[^>]*>[\s\S]*?<\/button>/gis,
+      ""
+    );
+    cleaned = cleaned.replace(
+      /<button[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?<\/button>/gis,
+      ""
+    );
+
+    return cleaned;
   }
 
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
     if (!html) {
-      throw new Error('No HTML content found in AI Mode response');
+      throw new Error("No HTML content found in AI Mode response");
     }
 
     let finalHtml = html;
@@ -104,10 +176,41 @@ export class AIModeProvider extends BaseProvider {
     let stylesToInject = "";
 
     // Always inject general layout
-    stylesToInject += `
-      /* General Layout */
-      main { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-    `;
+    stylesToInject += ``;
+
+    // Add background and text colors based on invertColors option
+    if (options?.invertColors) {
+      stylesToInject += `
+        /* Dark theme */
+        html, body, main, article, footer, form {
+          background-color: #131314 !important;
+          color: #e3e3e3 !important;
+        }
+      `;
+    } else {
+      stylesToInject += `
+        /* Light theme - force all backgrounds to white */
+        *, div, span, p, a, li, td, th, section, article, main, aside, nav, header, footer {
+          background-color: #ffffff !important;
+        }
+
+        html, body, main, article, footer, form {
+          background-color: #ffffff !important;
+        }
+
+        /* Force dark text color on all text elements */
+        *, p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, strong, b, em, i, a {
+          color: #1a1a1a !important;
+        }
+
+        /* Force borders and dividers to be visible */
+        hr, [class*="border"], [class*="divider"], [class*="separator"],
+        [class*="border-t"], [class*="border-b"], [class*="border-l"], [class*="border-r"],
+        table, tr, td, th {
+          border-color: #d4d4d4 !important;
+        }
+      `;
+    }
 
     // Header removal styles
     if (removeHeader) {
@@ -159,8 +262,8 @@ export class AIModeProvider extends BaseProvider {
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
+        colorsInverted: options?.invertColors || false,
       },
     };
   }
-
 }
