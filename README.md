@@ -74,8 +74,8 @@ Parse an AI response with auto-detected provider.
 
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
 - `invertColors`: `boolean` - Apply color inversion for dark mode (default: `false`)
-- `removeNavbar`: `boolean` - Remove navigation bar (default: `false`, Perplexity, Gemini & Copilot)
-- `removeFollowup`: `boolean` - Remove follow-up input box (default: `false`, ChatGPT, Perplexity, Gemini & Copilot)
+- `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
 
 **Returns:** `ParsedResponse | null`
@@ -99,8 +99,9 @@ Main React component for rendering AI responses.
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
-- `removeNavbar`: Remove navigation bar (default: `false`, Perplexity & Gemini)
-- `removeFollowup`: Remove follow-up input box (default: `false`, Perplexity only)
+- `removeHeader`: Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeFooter`: Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeSidebar`: Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
 - `className`: CSS class for container
 - `iframeProps`: Additional props for iframe
 - `loadingComponent`: Custom loading component
@@ -121,8 +122,9 @@ React hook for parsing AI responses.
 - `provider`: Explicitly specify provider
 - `removeLinks`: Remove all hyperlinks (default: `false`)
 - `invertColors`: Apply color inversion (default: `false`)
-- `removeNavbar`: Remove navigation bar (default: `false`, Perplexity & Gemini)
-- `removeFollowup`: Remove follow-up input box (default: `false`, Perplexity only)
+- `removeHeader`: Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeFooter`: Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeSidebar`: Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
 - `onProviderDetected`: Callback when provider is detected
 - `onError`: Callback when error occurs
 
@@ -175,8 +177,8 @@ const parsed = parseAiResponse(response, {
 ```tsx
 <ResponseRenderer
   response={response}
-  removeNavbar={true} // Remove top navigation bar
-  removeFollowup={true} // Remove follow-up input box
+  removeHeader={true} // Remove top navigation bar
+  removeFooter={true} // Remove follow-up input box
   removeLinks={true} // Remove all hyperlinks
   invertColors={true} // Dark mode
 />
@@ -205,10 +207,17 @@ const ErrorComponent = ({ error, retry }) => (
 <ResponseRenderer response={response} errorComponent={ErrorComponent} />;
 ```
 
-## What's Changed in v0.1.3
+## What's Changed
 
-### Simplified API
+### v0.1.4
+- ✅ **Renamed** `removeNavbar` → `removeHeader` (removes navigation bar/header)
+- ✅ **Renamed** `removeFollowup` → `removeFooter` (removes follow-up input box/footer)
+- ✅ **Extended** `removeHeader` support to AI Overview and AI Mode
+- ✅ **Extended** `removeFooter` support to all providers (ChatGPT, Perplexity, Gemini, Copilot, AI Overview, AI Mode)
+- ✅ **Improved** ChatGPT styling
+- ✅ **Updated** AI Mode and AI Overview parsers
 
+### v0.1.3
 - ✅ **Always sanitizes** HTML by default (removes scripts for security)
 - ✅ **Always includes** provider-specific styles
 - ✅ **Always uses** provider's base URL for relative links
@@ -216,15 +225,6 @@ const ErrorComponent = ({ error, retry }) => (
 - ❌ **Removed** `sanitize` option (always enabled)
 - ❌ **Removed** `includeStyles` option (always enabled)
 - ❌ **Removed** `baseUrl` option (uses provider default)
-- ✅ **Added** `removeNavbar` option (removes navigation bar)
-- ✅ **Added** `removeFollowup` option (removes follow-up input)
-
-### Remaining Options
-
-- `removeLinks`: Remove all hyperlinks from HTML
-- `invertColors`: Apply color inversion
-- `removeNavbar`: Remove navigation bar (Perplexity & Gemini)
-- `removeFollowup`: Remove follow-up input (Perplexity only)
 
 ### Component Renaming
 
