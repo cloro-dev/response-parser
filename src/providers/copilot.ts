@@ -73,6 +73,21 @@ export class CopilotProvider extends BaseProvider {
   }
 
   /**
+   * Remove Copilot cookie banner from HTML
+   */
+  removeCookieBanner(html: string): string {
+    let cleaned = html;
+
+    // Remove cookie banner by id
+    cleaned = cleaned.replace(/<div[^>]*id="cookie-banner"[^>]*>.*?<\/div>.*?<\/div>.*?<\/div>.*?<\/div>/gis, '');
+
+    // Remove cookie banner by max-w-cookie-banner class (outer container)
+    cleaned = cleaned.replace(/<div[^>]*class="[^"]*max-w-cookie-banner[^"]*"[^>]*>.*?<\/div>.*?<\/div>.*?<\/div>.*?<\/div>/gis, '');
+
+    return cleaned;
+  }
+
+  /**
    * Remove Copilot sidebar from HTML
    */
   removeSidebar(html: string): string {
@@ -100,6 +115,9 @@ export class CopilotProvider extends BaseProvider {
 
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
+
+    // Remove cookie banner (always)
+    finalHtml = this.removeCookieBanner(finalHtml);
 
     // Remove header if requested
     if (removeHeader) {
@@ -133,6 +151,7 @@ export class CopilotProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        cookieBannerRemoved: true,
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
