@@ -141,14 +141,14 @@ React hook for parsing AI responses.
 
 ## Supported Providers
 
-| Provider    | Status | Features                                             |
-| ----------- | ------ | ---------------------------------------------------- |
-| ChatGPT     | ✅     | Dark mode, sidebar hiding                            |
-| Gemini      | ✅     | Material Design overrides, navbar removal             |
-| Perplexity  | ✅     | Color inversion, link removal, UI element removal      |
-| Copilot     | ✅     | UI element hiding                                    |
-| AI Overview | ✅     | WIZ data extraction                                  |
-| AI Mode     | ✅     | Google UI hiding                                     |
+| Provider    | Status | Features                                          |
+| ----------- | ------ | ------------------------------------------------- |
+| ChatGPT     | ✅     | Dark mode, sidebar hiding                         |
+| Gemini      | ✅     | Material Design overrides, navbar removal         |
+| Perplexity  | ✅     | Color inversion, link removal, UI element removal |
+| Copilot     | ✅     | UI element hiding                                 |
+| AI Overview | ✅     | WIZ data extraction                               |
+| AI Mode     | ✅     | Google UI hiding                                  |
 
 ## Examples
 
@@ -210,6 +210,7 @@ const ErrorComponent = ({ error, retry }) => (
 ## What's Changed
 
 ### v0.1.4
+
 - ✅ **Renamed** `removeNavbar` → `removeHeader` (removes navigation bar/header)
 - ✅ **Renamed** `removeFollowup` → `removeFooter` (removes follow-up input box/footer)
 - ✅ **Extended** `removeHeader` support to AI Overview and AI Mode
@@ -218,6 +219,7 @@ const ErrorComponent = ({ error, retry }) => (
 - ✅ **Updated** AI Mode and AI Overview parsers
 
 ### v0.1.3
+
 - ✅ **Always sanitizes** HTML by default (removes scripts for security)
 - ✅ **Always includes** provider-specific styles
 - ✅ **Always uses** provider's base URL for relative links

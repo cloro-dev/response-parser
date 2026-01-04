@@ -57,9 +57,33 @@ export class PerplexityProvider extends BaseProvider {
    * Remove Perplexity footer/followup input from HTML
    */
   removeFooter(html: string): string {
-    // Remove the fixed positioned followup container
-    // Matches from erp-sidecar:fixed div through 4 closing divs
-    return html.replace(/<div[^>]*class="[^"]*erp-sidecar:fixed[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
+    let cleaned = html;
+
+    // APPROACH 1: Remove by matching the entire fixed container
+    // Match from <div with erp-sidecar:fixed to the matching closing </div></div></body>
+    // This works by finding the start of the footer and removing everything until we see body close
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*erp-sidecar:fixed[^"']*["'][^>]*>.*?(?=<\/body>)/gis, '</body>');
+
+    // APPROACH 2: Remove by matching the bottom-safeAreaInsetBottom class (footer positioning)
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*bottom-safeAreaInsetBottom[^"']*["'][^>]*>.*?(?=<\/body>)/gis, '</body>');
+
+    // APPROACH 3: If the above fail, remove individual components
+
+    // Remove the entire rounded-2xl bg-raised input container
+    // This matches from the bg-raised div through all its nested content
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*bg-raised[^"']*["'][^>]*>.*?id=["']ask-input["'][^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
+
+    // Remove segmented control (col-start-1 row-start-2) with its container
+    // Updated pattern to match more flexibly with variable closing divs
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*col-start-1 row-start-2[^"']*["'][^>]*>.*?(?=<div[^>]*class=["'][^"']*col-start-3)/gis, '');
+
+    // Remove input buttons (col-start-3 row-start-2) with its container
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*col-start-3 row-start-2[^"']*["'][^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
+
+    // Remove by aria-labels (last resort)
+    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*["'][^>]*>.*?aria-label=["']Choose a model["'].*?aria-label=["']Dictation["'].*?aria-label=["']Submit["'].*?<\/div>/gis, '');
+
+    return cleaned;
   }
 
   parse(response: any, options?: ParseOptions): ParsedResponse {
