@@ -50,7 +50,10 @@ export class PerplexityProvider extends BaseProvider {
   removeHeader(html: string): string {
     // Remove navbar by targeting the unique @container/header class
     // Matches from the navbar opening div through the border divider at the bottom
-    return html.replace(/<div[^>]*class="[^"]*@container\/header[^"]*"[^>]*>.*?<div[^>]*class="[^"]*absolute bottom-0 inset-x-0 border-b[^"]*"[^>]*><\/div>/gis, '');
+    return html.replace(
+      /<div[^>]*class="[^"]*@container\/header[^"]*"[^>]*>.*?<div[^>]*class="[^"]*absolute bottom-0 inset-x-0 border-b[^"]*"[^>]*><\/div>/gis,
+      ""
+    );
   }
 
   /**
@@ -58,31 +61,9 @@ export class PerplexityProvider extends BaseProvider {
    */
   removeFooter(html: string): string {
     let cleaned = html;
-
-    // APPROACH 1: Remove by matching the entire fixed container
-    // Match from <div with erp-sidecar:fixed to the matching closing </div></div></body>
-    // This works by finding the start of the footer and removing everything until we see body close
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*erp-sidecar:fixed[^"']*["'][^>]*>.*?(?=<\/body>)/gis, '</body>');
-
-    // APPROACH 2: Remove by matching the bottom-safeAreaInsetBottom class (footer positioning)
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*bottom-safeAreaInsetBottom[^"']*["'][^>]*>.*?(?=<\/body>)/gis, '</body>');
-
-    // APPROACH 3: If the above fail, remove individual components
-
-    // Remove the entire rounded-2xl bg-raised input container
-    // This matches from the bg-raised div through all its nested content
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*bg-raised[^"']*["'][^>]*>.*?id=["']ask-input["'][^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
-
-    // Remove segmented control (col-start-1 row-start-2) with its container
-    // Updated pattern to match more flexibly with variable closing divs
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*col-start-1 row-start-2[^"']*["'][^>]*>.*?(?=<div[^>]*class=["'][^"']*col-start-3)/gis, '');
-
-    // Remove input buttons (col-start-3 row-start-2) with its container
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*col-start-3 row-start-2[^"']*["'][^>]*>.*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gis, '');
-
-    // Remove by aria-labels (last resort)
-    cleaned = cleaned.replace(/<div[^>]*class=["'][^"']*["'][^>]*>.*?aria-label=["']Choose a model["'].*?aria-label=["']Dictation["'].*?aria-label=["']Submit["'].*?<\/div>/gis, '');
-
+    const regex =
+      /<div[^>]*class="[^"]*erp-sidecar:fixed erp-sidecar:w-full bottom-safeAreaInsetBottom p-md pointer-events-none z-10 absolute border-subtlest ring-subtlest divide-subtlest bg-transparent[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*fixed inset-y-0 right-0[^"]*")/gis;
+    cleaned = cleaned.replace(regex, "");
     return cleaned;
   }
 
@@ -117,12 +98,14 @@ export class PerplexityProvider extends BaseProvider {
     }
 
     // Inject styles with optional color inversion
-    const colorInversionStyles = options?.invertColors ? `
+    const colorInversionStyles = options?.invertColors
+      ? `
       html {
         filter: invert(1) hue-rotate(180deg);
         background-color: white !important;
       }
-    ` : "";
+    `
+      : "";
 
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
