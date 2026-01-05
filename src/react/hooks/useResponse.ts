@@ -44,7 +44,7 @@ export function useResponse(
     if (explicitProvider) return explicitProvider;
     if (autoDetect && response) return detectProvider(response);
     return null;
-  }, [response, explicitProvider, autoDetect, trigger]);
+  }, [response, explicitProvider, autoDetect]);
 
   useEffect(() => {
     onProviderDetected?.(detectedProvider);
@@ -85,10 +85,9 @@ export function useResponse(
     } finally {
       setIsLoading(false);
     }
-  }, [response, removeLinks, invertColors, removeHeader, removeFooter, explicitProvider, trigger]);
+  }, [response, removeLinks, invertColors, removeHeader, removeFooter, removeSidebar, explicitProvider, trigger, onError]);
 
-  const reparse = (newOptions?: Partial<UseResponseOptions>) => {
-    // Force re-parse with new options
+  const reparse = () => {
     setTrigger((prev) => prev + 1);
   };
 

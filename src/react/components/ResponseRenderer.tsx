@@ -31,7 +31,6 @@ export const ResponseRenderer: React.FC<ResponseRendererProps> = ({
     error,
     html,
     text,
-    sources,
     reparse,
   } = useResponse(response, options);
 

@@ -27,7 +27,7 @@ export class AIResponseParser {
 
     if (!detection) {
       // Try to parse as generic HTML if no provider detected
-      return this.parseGeneric(response, options);
+      return this.parseGeneric(response);
     }
 
     const provider = this.providers.get(detection.provider);
@@ -89,7 +89,7 @@ export class AIResponseParser {
   /**
    * Parse as generic HTML when no specific provider is detected
    */
-  private parseGeneric(response: any, options?: ParseOptions): ParsedResponse | null {
+  private parseGeneric(response: any): ParsedResponse | null {
     // Extract HTML or text from response
     let html = '';
     let text = '';

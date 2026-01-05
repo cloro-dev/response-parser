@@ -81,7 +81,7 @@ export class ProviderDetector {
           if (pattern(response)) {
             scores[provider as AIProvider]++;
           }
-        } catch (error) {
+        } catch {
           // Ignore pattern errors
         }
       }
@@ -120,7 +120,7 @@ export class ProviderDetector {
           if (pattern(response)) {
             matches++;
           }
-        } catch (error) {
+        } catch {
           // Ignore pattern errors
         }
       }
