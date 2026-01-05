@@ -1,6 +1,6 @@
 {
   "name": "@cloro-dev/response-parser",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "description": "Parse and render AI model responses from ChatGPT, Gemini, Perplexity, and more",
   "main": "dist/index.js",
