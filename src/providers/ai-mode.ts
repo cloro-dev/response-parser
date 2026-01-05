@@ -176,7 +176,12 @@ export class AIModeProvider extends BaseProvider {
     let stylesToInject = "";
 
     // Always inject general layout
-    stylesToInject += ``;
+    /* Remove cookie consent banner */
+    stylesToInject += `
+      .KxvlWc, #CXQnmb {
+        display: none !important;
+      }
+    `;
 
     // Add background and text colors based on invertColors option
     if (options?.invertColors) {
