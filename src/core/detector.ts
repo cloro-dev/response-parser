@@ -59,6 +59,13 @@ export class ProviderDetector {
         return html.includes('DZ13He') || html.includes('wYq63b') || html.includes('AI Mode');
       },
     ],
+    GROK: [
+      // Check for Grok-specific structure
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('grok.com') || html.includes('x.ai');
+      },
+    ],
   };
 
   /**
@@ -72,6 +79,7 @@ export class ProviderDetector {
       COPILOT: 0,
       AIOVERVIEW: 0,
       AIMODE: 0,
+      GROK: 0,
     };
 
     // Score each provider based on pattern matches

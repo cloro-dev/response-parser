@@ -21,3 +21,4 @@ export { PerplexityProvider } from './providers/perplexity';
 export { CopilotProvider } from './providers/copilot';
 export { AIOverviewProvider } from './providers/ai-overview';
 export { AIModeProvider } from './providers/ai-mode';
+export { GrokProvider } from './providers/grok';

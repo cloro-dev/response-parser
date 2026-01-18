@@ -4,7 +4,8 @@ export type AIProvider =
   | 'PERPLEXITY'
   | 'COPILOT'
   | 'AIOVERVIEW'
-  | 'AIMODE';
+  | 'AIMODE'
+  | 'GROK';
 
 export interface ParsedResponse {
   provider: AIProvider;

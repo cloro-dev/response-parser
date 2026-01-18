@@ -6,6 +6,7 @@ import { PerplexityProvider } from '../providers/perplexity';
 import { CopilotProvider } from '../providers/copilot';
 import { AIOverviewProvider } from '../providers/ai-overview';
 import { AIModeProvider } from '../providers/ai-mode';
+import { GrokProvider } from '../providers/grok';
 
 export class AIResponseParser {
   private providers: Map<AIProvider, any> = new Map();
@@ -17,6 +18,7 @@ export class AIResponseParser {
     this.providers.set('COPILOT', new CopilotProvider());
     this.providers.set('AIOVERVIEW', new AIOverviewProvider());
     this.providers.set('AIMODE', new AIModeProvider());
+    this.providers.set('GROK', new GrokProvider());
   }
 
   /**
