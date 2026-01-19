@@ -117,9 +117,9 @@ export class ChatGPTProvider extends BaseProvider {
       ""
     );
 
-    // Remove disclaimer footer ("ChatGPT can make mistakes...")
+    // Remove disclaimer footer (language-agnostic, targets view-transition-name)
     cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*text-token-text-secondary[^"]*"[^>]*>.*?ChatGPT can make mistakes\. Check important info\..*?<\/div><\/div>/gis,
+      /<div[^>]*\[view-transition-name:var\(--vt-disclaimer\)\][^>]*>.*?<\/div><\/div>/gis,
       ""
     );
 
@@ -155,36 +155,50 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Inject styles - always apply styles for proper theming
+    // Inject styles - invert colors if requested
+    // ChatGPT's default is dark theme, so invertColors should apply light theme
     const stylesToInject = options?.invertColors
       ? `
-    /* Force Dark Background on main containers */
-    html, body, main, article, footer, form {
-      background-color: #131314 !important;
-    }
-  `
-      : `
-    /* Force Light Background on main containers */
-    html, body, main, article, footer, form {
+    /* Force Light Theme (invert from default dark) - only main background */
+    html, body, main {
       background-color: #ffffff !important;
     }
-
-    /* Override ChatGPT token text color classes - targeting text content only */
-    p[class*="text-token"], span[class*="text-token"], div[class*="text-token"],
-    h1[class*="text-token"], h2[class*="text-token"], h3[class*="text-token"],
-    h4[class*="text-token"], h5[class*="text-token"], h6[class*="text-token"],
-    li[class*="text-token"], td[class*="text-token"], th[class*="text-token"],
-    [class*="markdown-"], strong, b, em, i, h1, h2, h3, h4, h5, h6, p, li, td, th {
-      color: #1a1a1a !important;
+    /* Force all text to dark grey (not pure black for better readability) */
+    html, body, main, article, div, span, p, h1, h2, h3, h4, h5, h6, li, a, button, strong, label, textarea {
+      color: #1A1A1A !important;
     }
-
-    /* Force borders and dividers to be visible */
-    hr, [class*="border"], [class*="divider"], [class*="separator"],
-    [class*="border-t"], [class*="border-b"], [class*="border-l"], [class*="border-r"],
-    table, tr, td, th {
-      border-color: #d4d4d4 !important;
+    /* Apply light grey background to user message pills */
+    .user-message-bubble-color {
+      background-color: #F4F4F4 !important;
     }
-  `;
+    /* Apply light grey background to citation pills - highly specific selector */
+    a.flex.rounded-xl.px-2.text-\\[9px\\],
+    a[class*="rounded-xl"][class*="px-2"][class*="text-\\[9px\\]"],
+    span[class*="webpage-citation-pill"] a {
+      background-color: #F4F4F4 !important;
+    }
+    /* Invert scroll button colors */
+    button.rounded-full.w-8.h-8.bg-token-main-surface-primary,
+    button[class*="rounded-full"][class*="w-8"][class*="h-8"] {
+      background-color: #ffffff !important;
+      border-color: #E5E5E5 !important;
+    }
+    /* Invert composer box */
+    div[data-composer-surface="true"],
+    div.bg-token-bg-primary.dark\\:bg-\\[\\#303030\\] {
+      background-color: #ffffff !important;
+      border: 1px solid #E5E5E5 !important;
+    }
+    /* Invert composer pills */
+    button.__composer-pill,
+    [class*="__composer-pill"] {
+      background-color: #F4F4F4 !important;
+      border: 1px solid #E5E5E5 !important;
+    }
+    `: ``;
+    //BUG: in default style the buttons are having its inside removed (in original HTML)
+    //BUG: in inverted style the citation pills are not having background color inverted
+    //BUG: in inverted style the chatbox has not inverted background color
 
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
