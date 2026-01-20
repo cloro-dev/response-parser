@@ -65,6 +65,7 @@ export class AIModeProvider extends BaseProvider {
   /**
    * Remove Google Search footer from HTML
    */
+  //BUG: still not working
   removeFooter(html: string): string {
     let cleaned = html;
 
@@ -100,6 +101,7 @@ export class AIModeProvider extends BaseProvider {
   /**
    * Remove Google Search sidebar from HTML
    */
+  //BUG: still not working
   removeSidebar(html: string): string {
     let cleaned = html;
 
