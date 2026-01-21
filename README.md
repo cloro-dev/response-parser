@@ -1,14 +1,16 @@
 # @cloro-dev/response-parser
 
-A powerful TypeScript library for parsing and rendering AI model responses from ChatGPT, Gemini, Perplexity, Copilot, and Google AI Overview/Mode.
+A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Copilot, and Google AI Overview/Mode.
+
+> **Framework-Agnostic**: This library returns HTML strings that can be rendered in any framework (React, Vue, Svelte, vanilla JS, etc.).
 
 ## Features
 
 - 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, Copilot, AI Overview, AI Mode
 - 🔍 **Auto-Detection**: Automatically detects the AI provider from response structure
 - 🎨 **Built-in Styling**: Provider-specific styling with dark mode support
-- ⚡ **React Components**: Ready-to-use React components for rendering
-- 🔒 **Secure**: Sandboxed rendering with automatic script sanitization
+- 🔧 **Framework-Agnostic**: Pure HTML output for any framework
+- 🔒 **Secure**: Automatic script sanitization
 - 📦 **TypeScript**: Full TypeScript support with comprehensive types
 - 🎯 **Lightweight**: No runtime dependencies for core parsing
 
@@ -24,7 +26,7 @@ pnpm add @cloro-dev/response-parser
 
 ## Quick Start
 
-### Basic Parsing
+This library parses AI responses and returns sanitized HTML strings. You can render the HTML in any framework:
 
 ```typescript
 import { parseAiResponse, detectProvider } from "@cloro-dev/response-parser";
@@ -38,35 +40,73 @@ console.log(parsed.html); // Sanitized HTML ready for rendering
 console.log(parsed.text); // Plain text version
 ```
 
-### React Component
+## Usage Examples
+
+### React
 
 ```tsx
-import { ResponseRenderer } from "@cloro-dev/response-parser/react";
+import { parseAiResponse } from "@cloro-dev/response-parser";
 
 function MyComponent() {
-  const [aiResponse, setAiResponse] = useState(null);
+  const parsed = parseAiResponse(aiResponse, {
+    invertColors: true,
+    removeLinks: true
+  });
 
   return (
-    <ResponseRenderer
-      response={aiResponse}
-      removeLinks={false}
-      invertColors={false}
-      autoDetect
-      className="w-full h-96"
-      iframeProps={{
-        sandbox: "allow-popups",
-      }}
-      onProviderDetected={(provider) => console.log("Detected:", provider)}
-    />
+    <div dangerouslySetInnerHTML={{ __html: parsed.html }} />
   );
 }
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { parseAiResponse } from "@cloro-dev/response-parser";
+
+const parsed = parseAiResponse(aiResponse, {
+  invertColors: true,
+  removeLinks: true
+});
+</script>
+
+<template>
+  <div v-html="parsed.html"></div>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script>
+import { parseAiResponse } from "@cloro-dev/response-parser";
+
+const parsed = parseAiResponse(aiResponse, {
+  invertColors: true,
+  removeLinks: true
+});
+</script>
+
+<div>{@html parsed.html}</div>
+```
+
+### Vanilla JavaScript
+
+```javascript
+import { parseAiResponse } from "@cloro-dev/response-parser";
+
+const parsed = parseAiResponse(aiResponse, {
+  invertColors: true,
+  removeLinks: true
+});
+
+document.getElementById('output').innerHTML = parsed.html;
+```
+
 ## API Reference
 
-### Core Functions
-
-#### `parseAiResponse(response, options?)`
+### `parseAiResponse(response, options?)`
 
 Parse an AI response with auto-detected provider.
 
@@ -80,64 +120,35 @@ Parse an AI response with auto-detected provider.
 
 **Returns:** `ParsedResponse | null`
 
-#### `detectProvider(response)`
+```typescript
+interface ParsedResponse {
+  provider: AIProvider;
+  html: string;
+  text: string;
+  sources?: Array<{
+    title: string;
+    url: string;
+    snippet?: string;
+  }>;
+}
+```
+
+### `detectProvider(response)`
 
 Detect the AI provider from a response.
 
 **Returns:** `AIProvider | null`
 
-### React Components
-
-#### `<ResponseRenderer />`
-
-Main React component for rendering AI responses.
-
-**Props:**
-
-- `response`: The AI response object
-- `autoDetect`: Auto-detect provider (default: `true`)
-- `provider`: Explicitly specify provider
-- `removeLinks`: Remove all hyperlinks (default: `false`)
-- `invertColors`: Apply color inversion (default: `false`)
-- `removeHeader`: Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeFooter`: Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeSidebar`: Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
-- `className`: CSS class for container
-- `iframeProps`: Additional props for iframe
-- `loadingComponent`: Custom loading component
-- `errorComponent`: Custom error component
-- `fallbackComponent`: Custom fallback component
-- `onRenderComplete`: Callback when rendering completes
-- `onProviderDetected`: Callback when provider is detected
-
-### Hooks
-
-#### `useResponse(response, options?)`
-
-React hook for parsing AI responses.
-
-**Options:**
-
-- `autoDetect`: Auto-detect provider (default: `true`)
-- `provider`: Explicitly specify provider
-- `removeLinks`: Remove all hyperlinks (default: `false`)
-- `invertColors`: Apply color inversion (default: `false`)
-- `removeHeader`: Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeFooter`: Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeSidebar`: Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
-- `onProviderDetected`: Callback when provider is detected
-- `onError`: Callback when error occurs
-
-**Returns:**
-
-- `parsed`: Parsed response object
-- `provider`: Detected provider
-- `isLoading`: Loading state
-- `error`: Error object
-- `html`: HTML string
-- `text`: Plain text string
-- `sources`: Sources array (if available)
-- `reparse`: Function to re-parse with new options
+```typescript
+type AIProvider =
+  | 'CHATGPT'
+  | 'GEMINI'
+  | 'PERPLEXITY'
+  | 'COPILOT'
+  | 'AI_OVERVIEW'
+  | 'AI_MODE'
+  | 'GROK';
+```
 
 ## Supported Providers
 
@@ -150,7 +161,7 @@ React hook for parsing AI responses.
 | AI Overview | ✅     | WIZ data extraction                               |
 | AI Mode     | ✅     | Google UI hiding                                  |
 
-## Examples
+## Common Use Cases
 
 ### Remove Hyperlinks
 
@@ -164,24 +175,22 @@ const parsed = parseAiResponse(response, {
 
 ### Dark Mode
 
-```tsx
-<ResponseRenderer
-  response={response}
-  invertColors={true} // Apply CSS filter for dark mode
-  removeLinks={true} // Optionally remove links
-/>
+```typescript
+const parsed = parseAiResponse(response, {
+  invertColors: true, // Apply CSS filter for dark mode
+  removeLinks: true, // Optionally remove links
+});
 ```
 
 ### Clean View (Remove UI Elements)
 
-```tsx
-<ResponseRenderer
-  response={response}
-  removeHeader={true} // Remove top navigation bar
-  removeFooter={true} // Remove follow-up input box
-  removeLinks={true} // Remove all hyperlinks
-  invertColors={true} // Dark mode
-/>
+```typescript
+const parsed = parseAiResponse(response, {
+  removeHeader: true, // Remove top navigation bar
+  removeFooter: true, // Remove follow-up input box
+  removeLinks: true, // Remove all hyperlinks
+  invertColors: true, // Dark mode
+});
 ```
 
 ### Manual Provider Specification
@@ -194,20 +203,57 @@ const parsed = parseAiResponse(response, {
 });
 ```
 
-### Error Handling
+### Provider Detection Only
 
-```tsx
-const ErrorComponent = ({ error, retry }) => (
-  <div className="error">
-    <p>Failed to load: {error.message}</p>
-    <button onClick={retry}>Retry</button>
-  </div>
-);
+```typescript
+import { detectProvider } from "@cloro-dev/response-parser";
 
-<ResponseRenderer response={response} errorComponent={ErrorComponent} />;
+const provider = detectProvider(response);
+console.log(`Detected: ${provider}`); // 'CHATGPT' | 'GEMINI' | etc.
 ```
 
+## Migration from v0.1.x
+
+If you were using React components from v0.1.x, here's how to migrate:
+
+### Before (v0.1.x with React)
+
+```tsx
+import { ResponseRenderer } from "@cloro-dev/response-parser/react";
+
+<ResponseRenderer
+  response={response}
+  invertColors={true}
+  removeLinks={true}
+  onProviderDetected={(provider) => console.log("Detected:", provider)}
+/>
+```
+
+### After (v0.2.0 framework-agnostic)
+
+```tsx
+import { parseAiResponse } from "@cloro-dev/response-parser";
+
+const parsed = parseAiResponse(response, {
+  invertColors: true,
+  removeLinks: true
+});
+
+console.log("Detected:", parsed.provider);
+
+<div dangerouslySetInnerHTML={{ __html: parsed.html }} />
+```
+
+The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
+
 ## What's Changed
+
+### v0.2.0
+
+- ✅ **Removed** React components and hooks (now framework-agnostic)
+- ✅ **Removed** React peer dependency
+- ✅ **Simplified** API to return pure HTML strings
+- ✅ **Keep** core parsing logic (unchanged)
 
 ### v0.1.4
 
@@ -228,11 +274,6 @@ const ErrorComponent = ({ error, retry }) => (
 - ❌ **Removed** `includeStyles` option (always enabled)
 - ❌ **Removed** `baseUrl` option (uses provider default)
 
-### Component Renaming
-
-- `AiResponseRenderer` → `ResponseRenderer`
-- `useAiResponse` → `useResponse`
-
 ## Development
 
 ```bash
@@ -247,6 +288,12 @@ pnpm test
 
 # Development mode
 pnpm dev
+
+# Type check
+pnpm type-check
+
+# Lint
+pnpm lint
 ```
 
 ## License
