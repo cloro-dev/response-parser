@@ -110,34 +110,58 @@ export class AIOverviewProvider extends BaseProvider {
 
     // Add background and text colors based on invertColors option
     if (options?.invertColors) {
-      stylesToInject += `
-        /* Dark theme */
-        html, body, main, article, footer, form {
-          background-color: #131314 !important;
-          color: #e3e3e3 !important;
-        }
-      `;
+      stylesToInject += ``;
     } else {
       stylesToInject += `
-        /* Light theme - force all backgrounds to white */
-        *, div, span, p, a, li, td, th, section, article, main, aside, nav, header, footer {
+        /* Light theme - force light backgrounds and dark text on ALL elements */
+        * {
           background-color: #ffffff !important;
-        }
-
-        html, body, main, article, footer, form {
-          background-color: #ffffff !important;
-        }
-
-        /* Force dark text color on all text elements */
-        *, p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, strong, b, em, i, a {
+          background: #ffffff !important;
           color: #1a1a1a !important;
         }
 
-        /* Force borders and dividers to be visible */
-        hr, [class*="border"], [class*="divider"], [class*="separator"],
-        [class*="border-t"], [class*="border-b"], [class*="border-l"], [class*="border-r"],
-        table, tr, td, th {
-          border-color: #d4d4d4 !important;
+        html, body, div, span, p, a, button, h1, h2, h3, h4, h5, h6,
+        ul, ol, li, strong, b, em, i, u, s, strike, small, big, sub, sup,
+        table, tr, td, th, thead, tbody, tfoot, form, input, textarea, select,
+        article, section, aside, nav, header, footer, main, figure, figcaption {
+          background-color: #ffffff !important;
+          background: #ffffff !important;
+          color: #1a1a1a !important;
+        }
+
+        /* Override Google's CSS variables to force light theme */
+        :root {
+          --xhUGwc: #ffffff !important;
+          --gVUKcd: #ffffff !important;
+          --YLNNHc: #1a1a1a !important;
+          --JKqx2: #1a0dab !important;
+          --IXoxUe: #4d5156 !important;
+          --bbQxAb: #202124 !important;
+        }
+
+        /* Specifically override classes with white text */
+        .XEI2lf, .Iq9dx, .qOAOh, .Ga40Nb,
+        [style*="color: white"], [style*="color:#fff"], [style*="color:#ffffff"],
+        [style*="color: rgb(255, 255, 255)"], [style*="color:rgb(255,255,255)"],
+        [style*="color:white"], [style*="color: #fff"], [style*="color: #ffffff"] {
+          color: #1a1a1a !important;
+          background-color: #ffffff !important;
+          background: #ffffff !important;
+        }
+
+        /* Handle elements with inline styles that might cause white on white */
+        [style*="color: white"], [style*="color:#fff"], [style*="color:#ffffff"],
+        [style*="color:white"] {
+          color: #1a1a1a !important;
+        }
+
+        /* Restore link colors */
+        a, a * {
+          color: #1a0dab !important;
+        }
+
+        a:visited {
+          color: #609 !important;
         }
       `;
     }
