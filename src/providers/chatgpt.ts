@@ -66,6 +66,21 @@ export class ChatGPTProvider extends BaseProvider {
   }
 
   /**
+   * Remove ChatGPT header from HTML
+   */
+  removeHeader(html: string): string {
+    let cleaned = html;
+
+    // Remove page header by id
+    cleaned = cleaned.replace(
+      /<header[^>]*id="page-header"[^>]*>.*?<\/header>/gis,
+      ""
+    );
+
+    return cleaned;
+  }
+
+  /**
    * Remove ChatGPT sidebar from HTML
    */
   removeSidebar(html: string): string {
@@ -140,6 +155,11 @@ export class ChatGPTProvider extends BaseProvider {
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
+    // Remove header if requested
+    if (options?.removeHeader) {
+      finalHtml = this.removeHeader(finalHtml);
+    }
+
     // Remove sidebar if requested
     if (options?.removeSidebar) {
       finalHtml = this.removeSidebar(finalHtml);
@@ -211,6 +231,7 @@ export class ChatGPTProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        headerRemoved: options?.removeHeader || false,
         sidebarRemoved: options?.removeSidebar || false,
         footerRemoved: removeFooter,
         linksRemoved: options?.removeLinks || false,
