@@ -4,6 +4,7 @@ import {
   ParsedResponse,
   ParseOptions,
   ContentExtraction,
+  ProviderMetadata,
 } from "../core/types";
 
 export class AIOverviewProvider extends BaseProvider {
@@ -11,38 +12,7 @@ export class AIOverviewProvider extends BaseProvider {
   readonly baseUrl = "https://www.google.com";
 
   extractContent(response: any): ContentExtraction {
-    let html = "";
-    let sources: any[] = [];
-
-    // Handle nested structure
-    let dataToCheck = response;
-    if (response.result) {
-      dataToCheck = response.result;
-    }
-
-    // For AI Overview, extract sources but never use text field
-    if (dataToCheck.aioverview) {
-      if (dataToCheck.aioverview.sources) {
-        sources = dataToCheck.aioverview.sources;
-      }
-    }
-
-    // Only extract HTML field - never use text to build HTML
-    if (typeof dataToCheck === "string") {
-      if (dataToCheck.trim().startsWith("<") && dataToCheck.includes(">")) {
-        html = dataToCheck;
-      }
-    } else if (typeof dataToCheck === "object" && dataToCheck !== null) {
-      if (dataToCheck.html) {
-        html = dataToCheck.html;
-      } else if (dataToCheck.content) {
-        if (dataToCheck.content.trim().startsWith("<")) {
-          html = dataToCheck.content;
-        }
-      }
-    }
-
-    return { html, sources };
+    return this.extractContentCommon(response, true);
   }
 
   /**
@@ -158,7 +128,7 @@ export class AIOverviewProvider extends BaseProvider {
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
-      },
+      } as ProviderMetadata,
     };
   }
 }

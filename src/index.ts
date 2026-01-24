@@ -11,6 +11,7 @@ export type {
   DetectedProvider,
   StyleOptions,
   ContentExtraction,
+  ProviderMetadata,
 } from './core/types';
 
 // Provider exports (for advanced usage)

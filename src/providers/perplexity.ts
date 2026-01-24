@@ -4,6 +4,7 @@ import {
   ParsedResponse,
   ParseOptions,
   ContentExtraction,
+  ProviderMetadata,
 } from "../core/types";
 
 export class PerplexityProvider extends BaseProvider {
@@ -11,37 +12,7 @@ export class PerplexityProvider extends BaseProvider {
   readonly baseUrl = "https://www.perplexity.ai";
 
   extractContent(response: any): ContentExtraction {
-    let html = "";
-    let text = "";
-
-    // Handle nested structure
-    let dataToCheck = response;
-    if (response.result) {
-      dataToCheck = response.result;
-    }
-
-    // Extract content
-    if (typeof dataToCheck === "string") {
-      if (dataToCheck.trim().startsWith("<") && dataToCheck.includes(">")) {
-        html = dataToCheck;
-      } else {
-        text = dataToCheck;
-      }
-    } else if (typeof dataToCheck === "object" && dataToCheck !== null) {
-      if (dataToCheck.html) {
-        html = dataToCheck.html;
-      } else if (dataToCheck.content) {
-        if (dataToCheck.content.trim().startsWith("<")) {
-          html = dataToCheck.content;
-        } else {
-          text = dataToCheck.content;
-        }
-      } else if (dataToCheck.text) {
-        text = dataToCheck.text;
-      }
-    }
-
-    return { html, text };
+    return this.extractContentCommon(response);
   }
 
   /**
@@ -111,7 +82,7 @@ export class PerplexityProvider extends BaseProvider {
         linksRemoved: options?.removeLinks || false,
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
-      },
+      } as ProviderMetadata,
     };
   }
 }

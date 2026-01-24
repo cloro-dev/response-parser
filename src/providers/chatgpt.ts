@@ -4,6 +4,7 @@ import {
   ParsedResponse,
   ParseOptions,
   ContentExtraction,
+  ProviderMetadata,
 } from "../core/types";
 
 export class ChatGPTProvider extends BaseProvider {
@@ -12,37 +13,7 @@ export class ChatGPTProvider extends BaseProvider {
 
 
   extractContent(response: any): ContentExtraction {
-    let html = "";
-    let text = "";
-
-    // Handle nested structure
-    let dataToCheck = response;
-    if (response.result) {
-      dataToCheck = response.result;
-    }
-
-    // Extract content
-    if (typeof dataToCheck === "string") {
-      if (dataToCheck.trim().startsWith("<") && dataToCheck.includes(">")) {
-        html = dataToCheck;
-      } else {
-        text = dataToCheck;
-      }
-    } else if (typeof dataToCheck === "object" && dataToCheck !== null) {
-      if (dataToCheck.html) {
-        html = dataToCheck.html;
-      } else if (dataToCheck.content) {
-        if (dataToCheck.content.trim().startsWith("<")) {
-          html = dataToCheck.content;
-        } else {
-          text = dataToCheck.content;
-        }
-      } else if (dataToCheck.text) {
-        text = dataToCheck.text;
-      }
-    }
-
-    return { html, text };
+    return this.extractContentCommon(response);
   }
 
   /**
@@ -190,7 +161,7 @@ export class ChatGPTProvider extends BaseProvider {
         sidebarRemoved: options?.removeSidebar || false,
         footerRemoved: removeFooter,
         linksRemoved: options?.removeLinks || false,
-      },
+      } as ProviderMetadata,
     };
   }
 }

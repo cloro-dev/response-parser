@@ -1,4 +1,4 @@
-import { AIProvider, ParsedResponse, ParseOptions } from './types';
+import { AIProvider, ParsedResponse, ParseOptions, extractContentCommon } from './types';
 import { ProviderDetector } from './detector';
 import { ChatGPTProvider } from '../providers/chatgpt';
 import { GeminiProvider } from '../providers/gemini';
@@ -92,54 +92,23 @@ export class AIResponseParser {
    * Parse as generic HTML when no specific provider is detected
    */
   private parseGeneric(response: any): ParsedResponse | null {
-    // Extract HTML or text from response
-    let html = '';
-    let text = '';
-
-    const checkContent = (obj: any) => {
-      if (typeof obj === 'string') {
-        if (obj.trim().startsWith('<') && obj.includes('>')) {
-          html = obj;
-        } else {
-          text = obj;
-        }
-      } else if (typeof obj === 'object' && obj !== null) {
-        if (obj.html) {
-          html = obj.html;
-        } else if (obj.content) {
-          if (obj.content.trim().startsWith('<')) {
-            html = obj.content;
-          } else {
-            text = obj.content;
-          }
-        } else if (obj.text) {
-          text = obj.text;
-        }
-      }
-    };
-
-    // Check nested structure
-    let dataToCheck = response;
-    if (response.result) {
-      dataToCheck = response.result;
-    }
-
-    checkContent(dataToCheck);
+    const { html, text } = extractContentCommon(response);
 
     if (!html && !text) {
       return null;
     }
 
     // Basic sanitization
-    if (html) {
-      html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gim, '');
-      html = html.replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
+    let sanitizedHtml = html;
+    if (sanitizedHtml) {
+      sanitizedHtml = sanitizedHtml.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gim, '');
+      sanitizedHtml = sanitizedHtml.replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
     }
 
     return {
       provider: 'CHATGPT' as AIProvider, // Default to ChatGPT for unknown
-      html,
-      text,
+      html: sanitizedHtml || '',
+      text: text || '',
       metadata: {
         isGeneric: true,
       },

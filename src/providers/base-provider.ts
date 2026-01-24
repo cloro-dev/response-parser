@@ -1,4 +1,4 @@
-import { AIProvider, ParsedResponse, ParseOptions, StyleOptions, ContentExtraction } from '../core/types';
+import { AIProvider, ParsedResponse, ParseOptions, StyleOptions, ContentExtraction, extractContentCommon } from '../core/types';
 
 export abstract class BaseProvider {
   abstract readonly name: AIProvider;
@@ -13,6 +13,30 @@ export abstract class BaseProvider {
    * Extract content from the response object
    */
   abstract extractContent(response: any): ContentExtraction;
+
+  /**
+   * Common content extraction logic - can be used by providers
+   */
+  protected extractContentCommon(response: any, includeSources = false): ContentExtraction {
+    const result = extractContentCommon(response);
+
+    if (includeSources) {
+      let sources: any[] = [];
+      const dataToCheck = response.result || response;
+
+      if (typeof dataToCheck === 'object' && dataToCheck !== null) {
+        if (dataToCheck.aioverview?.sources) {
+          sources = dataToCheck.aioverview.sources;
+        } else if (dataToCheck.sources) {
+          sources = dataToCheck.sources;
+        }
+      }
+
+      return { ...result, sources };
+    }
+
+    return result;
+  }
 
   /**
    * Inject provider-specific styles into HTML

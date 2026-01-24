@@ -4,6 +4,7 @@ import {
   ParsedResponse,
   ParseOptions,
   ContentExtraction,
+  ProviderMetadata,
 } from "../core/types";
 
 export class AIModeProvider extends BaseProvider {
@@ -11,37 +12,7 @@ export class AIModeProvider extends BaseProvider {
   readonly baseUrl = "https://www.google.com";
 
   extractContent(response: any): ContentExtraction {
-    let html = "";
-    let text = "";
-
-    // Handle nested structure
-    let dataToCheck = response;
-    if (response.result) {
-      dataToCheck = response.result;
-    }
-
-    // Extract content
-    if (typeof dataToCheck === "string") {
-      if (dataToCheck.trim().startsWith("<") && dataToCheck.includes(">")) {
-        html = dataToCheck;
-      } else {
-        text = dataToCheck;
-      }
-    } else if (typeof dataToCheck === "object" && dataToCheck !== null) {
-      if (dataToCheck.html) {
-        html = dataToCheck.html;
-      } else if (dataToCheck.content) {
-        if (dataToCheck.content.trim().startsWith("<")) {
-          html = dataToCheck.content;
-        } else {
-          text = dataToCheck.content;
-        }
-      } else if (dataToCheck.text) {
-        text = dataToCheck.text;
-      }
-    }
-
-    return { html, text };
+    return this.extractContentCommon(response);
   }
 
   /**
@@ -65,7 +36,6 @@ export class AIModeProvider extends BaseProvider {
   /**
    * Remove Google Search footer from HTML
    */
-  //BUG: still not working
   removeFooter(html: string): string {
     let cleaned = html;
 
@@ -101,7 +71,6 @@ export class AIModeProvider extends BaseProvider {
   /**
    * Remove Google Search sidebar from HTML
    */
-  //BUG: still not working
   removeSidebar(html: string): string {
     let cleaned = html;
 
@@ -235,7 +204,7 @@ export class AIModeProvider extends BaseProvider {
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
-      },
+      } as ProviderMetadata,
     };
   }
 }
