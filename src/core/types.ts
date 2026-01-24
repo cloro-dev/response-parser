@@ -17,7 +17,6 @@ export interface ParsedResponse {
 
 export interface ParseOptions {
   removeLinks?: boolean;
-  invertColors?: boolean;
   removeHeader?: boolean;
   removeFooter?: boolean;
   removeSidebar?: boolean;

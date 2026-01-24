@@ -108,64 +108,6 @@ export class AIOverviewProvider extends BaseProvider {
     // Build CSS based on options
     let stylesToInject = "";
 
-    // Add background and text colors based on invertColors option
-    if (options?.invertColors) {
-      stylesToInject += ``;
-    } else {
-      stylesToInject += `
-        /* Light theme - force light backgrounds and dark text on ALL elements */
-        * {
-          background-color: #ffffff !important;
-          background: #ffffff !important;
-          color: #1a1a1a !important;
-        }
-
-        html, body, div, span, p, a, button, h1, h2, h3, h4, h5, h6,
-        ul, ol, li, strong, b, em, i, u, s, strike, small, big, sub, sup,
-        table, tr, td, th, thead, tbody, tfoot, form, input, textarea, select,
-        article, section, aside, nav, header, footer, main, figure, figcaption {
-          background-color: #ffffff !important;
-          background: #ffffff !important;
-          color: #1a1a1a !important;
-        }
-
-        /* Override Google's CSS variables to force light theme */
-        :root {
-          --xhUGwc: #ffffff !important;
-          --gVUKcd: #ffffff !important;
-          --YLNNHc: #1a1a1a !important;
-          --JKqx2: #1a0dab !important;
-          --IXoxUe: #4d5156 !important;
-          --bbQxAb: #202124 !important;
-        }
-
-        /* Specifically override classes with white text */
-        .XEI2lf, .Iq9dx, .qOAOh, .Ga40Nb,
-        [style*="color: white"], [style*="color:#fff"], [style*="color:#ffffff"],
-        [style*="color: rgb(255, 255, 255)"], [style*="color:rgb(255,255,255)"],
-        [style*="color:white"], [style*="color: #fff"], [style*="color: #ffffff"] {
-          color: #1a1a1a !important;
-          background-color: #ffffff !important;
-          background: #ffffff !important;
-        }
-
-        /* Handle elements with inline styles that might cause white on white */
-        [style*="color: white"], [style*="color:#fff"], [style*="color:#ffffff"],
-        [style*="color:white"] {
-          color: #1a1a1a !important;
-        }
-
-        /* Restore link colors */
-        a, a * {
-          color: #1a0dab !important;
-        }
-
-        a:visited {
-          color: #609 !important;
-        }
-      `;
-    }
-
     // Header removal styles
     if (removeHeader) {
       stylesToInject += `
@@ -216,7 +158,6 @@ export class AIOverviewProvider extends BaseProvider {
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
         linksRemoved: options?.removeLinks || false,
-        colorsInverted: options?.invertColors || false,
       },
     };
   }

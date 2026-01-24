@@ -175,54 +175,9 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Inject styles - invert colors if requested
-    // ChatGPT's default is dark theme, so invertColors should apply light theme
-    const stylesToInject = options?.invertColors
-      ? `
-    /* Force Light Theme (invert from default dark) - only main background */
-    html, body, main {
-      background-color: #ffffff !important;
-    }
-    /* Force all text to dark grey (not pure black for better readability) */
-    html, body, main, article, div, span, p, h1, h2, h3, h4, h5, h6, li, a, button, strong, label, textarea {
-      color: #1A1A1A !important;
-    }
-    /* Apply light grey background to user message pills */
-    .user-message-bubble-color {
-      background-color: #F4F4F4 !important;
-    }
-    /* Apply light grey background to citation pills - highly specific selector */
-    a.flex.rounded-xl.px-2.text-\\[9px\\],
-    a[class*="rounded-xl"][class*="px-2"][class*="text-\\[9px\\]"],
-    span[class*="webpage-citation-pill"] a {
-      background-color: #F4F4F4 !important;
-    }
-    /* Invert scroll button colors */
-    button.rounded-full.w-8.h-8.bg-token-main-surface-primary,
-    button[class*="rounded-full"][class*="w-8"][class*="h-8"] {
-      background-color: #ffffff !important;
-      border-color: #E5E5E5 !important;
-    }
-    /* Invert composer box */
-    div[data-composer-surface="true"],
-    div.bg-token-bg-primary.dark\\:bg-\\[\\#303030\\] {
-      background-color: #ffffff !important;
-      border: 1px solid #E5E5E5 !important;
-    }
-    /* Invert composer pills */
-    button.__composer-pill,
-    [class*="__composer-pill"] {
-      background-color: #F4F4F4 !important;
-      border: 1px solid #E5E5E5 !important;
-    }
-    `: ``;
-    //BUG: in default style the buttons are having its inside removed (in original HTML)
-    //BUG: in inverted style the citation pills are not having background color inverted
-    //BUG: in inverted style the chatbox has not inverted background color
-
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: stylesToInject,
+      customCSS: "",
     });
 
     return {
@@ -235,7 +190,6 @@ export class ChatGPTProvider extends BaseProvider {
         sidebarRemoved: options?.removeSidebar || false,
         footerRemoved: removeFooter,
         linksRemoved: options?.removeLinks || false,
-        colorsInverted: options?.invertColors || false,
       },
     };
   }

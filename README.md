@@ -6,9 +6,9 @@ A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemin
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, Copilot, AI Overview, AI Mode
+- 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, Copilot, AI Overview, AI Mode, Grok
 - 🔍 **Auto-Detection**: Automatically detects the AI provider from response structure
-- 🎨 **Built-in Styling**: Provider-specific styling with dark mode support
+- 🎨 **Built-in Styling**: Provider-specific styling
 - 🔧 **Framework-Agnostic**: Pure HTML output for any framework
 - 🔒 **Secure**: Automatic script sanitization
 - 📦 **TypeScript**: Full TypeScript support with comprehensive types
@@ -49,7 +49,6 @@ import { parseAiResponse } from "@cloro-dev/response-parser";
 
 function MyComponent() {
   const parsed = parseAiResponse(aiResponse, {
-    invertColors: true,
     removeLinks: true
   });
 
@@ -66,7 +65,6 @@ function MyComponent() {
 import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(aiResponse, {
-  invertColors: true,
   removeLinks: true
 });
 </script>
@@ -83,7 +81,6 @@ const parsed = parseAiResponse(aiResponse, {
 import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(aiResponse, {
-  invertColors: true,
   removeLinks: true
 });
 </script>
@@ -97,7 +94,6 @@ const parsed = parseAiResponse(aiResponse, {
 import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(aiResponse, {
-  invertColors: true,
   removeLinks: true
 });
 
@@ -113,7 +109,6 @@ Parse an AI response with auto-detected provider.
 **Options:**
 
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
-- `invertColors`: `boolean` - Apply color inversion for dark mode (default: `false`)
 - `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
 - `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
@@ -152,14 +147,15 @@ type AIProvider =
 
 ## Supported Providers
 
-| Provider    | Status | Features                                          |
-| ----------- | ------ | ------------------------------------------------- |
-| ChatGPT     | ✅     | Dark mode, sidebar hiding                         |
-| Gemini      | ✅     | Material Design overrides, navbar removal         |
-| Perplexity  | ✅     | Color inversion, link removal, UI element removal |
-| Copilot     | ✅     | UI element hiding                                 |
-| AI Overview | ✅     | WIZ data extraction                               |
-| AI Mode     | ✅     | Google UI hiding                                  |
+| Provider    | Status | Features                                 |
+| ----------- | ------ | ---------------------------------------- |
+| ChatGPT     | ✅     | Sidebar hiding                           |
+| Gemini      | ✅     | Navbar removal                           |
+| Perplexity  | ✅     | Link removal, UI element removal         |
+| Copilot     | ✅     | UI element hiding                        |
+| AI Overview | ✅     | WIZ data extraction                      |
+| AI Mode     | ✅     | Google UI hiding                         |
+| Grok        | ✅     | UI element removal                       |
 
 ## Common Use Cases
 
@@ -173,15 +169,6 @@ const parsed = parseAiResponse(response, {
 });
 ```
 
-### Dark Mode
-
-```typescript
-const parsed = parseAiResponse(response, {
-  invertColors: true, // Apply CSS filter for dark mode
-  removeLinks: true, // Optionally remove links
-});
-```
-
 ### Clean View (Remove UI Elements)
 
 ```typescript
@@ -189,7 +176,6 @@ const parsed = parseAiResponse(response, {
   removeHeader: true, // Remove top navigation bar
   removeFooter: true, // Remove follow-up input box
   removeLinks: true, // Remove all hyperlinks
-  invertColors: true, // Dark mode
 });
 ```
 
@@ -223,7 +209,6 @@ import { ResponseRenderer } from "@cloro-dev/response-parser/react";
 
 <ResponseRenderer
   response={response}
-  invertColors={true}
   removeLinks={true}
   onProviderDetected={(provider) => console.log("Detected:", provider)}
 />
@@ -235,7 +220,6 @@ import { ResponseRenderer } from "@cloro-dev/response-parser/react";
 import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(response, {
-  invertColors: true,
   removeLinks: true
 });
 

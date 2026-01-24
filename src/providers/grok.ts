@@ -173,78 +173,14 @@ export class GrokProvider extends BaseProvider {
       finalHtml = this.removeFooter(finalHtml);
     }
 
-    // Remove the "dark" class and color-scheme to force light mode when invertColors is enabled
-    if (options?.invertColors) {
-      // Remove the "dark" class from html element
-      finalHtml = finalHtml.replace(/\s*class\s*=\s*"[^"]*dark[^"]*"/gi, (match) => {
-        return match.replace(/\bdark\b/g, '').replace(/\s+/g, ' ').replace('class=""', 'class="light"').replace(/^class=""/, 'class="light"').replace(/class="\s+/, 'class="').replace(/\s+"/, '"');
-      });
-      // Remove the dark color-scheme
-      finalHtml = finalHtml.replace(/color-scheme:\s*dark/gi, 'color-scheme: light');
-    }
-
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Inject styles with optional color inversion
-    const colorInversionStyles = options?.invertColors
-      ? `
-      html {
-        color-scheme: light !important;
-      }
-      /* Force light background and dark text for all elements */
-      html, body {
-        background-color: #ffffff !important;
-        color: #1a1a1a !important;
-      }
-      /* Override Tailwind dark mode classes */
-      .dark, [class*="dark"] {
-        color-scheme: light !important;
-      }
-      /* Override common Grok CSS variables and classes */
-      [class*="bg-"], [class*="background"] {
-        background-color: #ffffff !important;
-      }
-      [class*="text-"], [class*="fg-"] {
-        color: #1a1a1a !important;
-      }
-      /* Override surface and foreground colors */
-      .bg-surface-base, .bg-surface, .surface {
-        background-color: #f9f9f9 !important;
-      }
-      .text-fg-primary, .text-fg, .fg-primary {
-        color: #1a1a1a !important;
-      }
-      /* Force borders to be visible */
-      [class*="border"], hr, table, td, th {
-        border-color: #d4d4d4 !important;
-      }
-      /* Code blocks */
-      pre, code, [class*="code"] {
-        background-color: #f5f5f5 !important;
-        color: #1a1a1a !important;
-        border-color: #d4d4d4 !important;
-      }
-    `
-      : `
-      /* Force light mode styling for Grok */
-      html, body {
-        background-color: #ffffff !important;
-        color: #1a1a1a !important;
-      }
-      .bg-surface-base, .bg-surface {
-        background-color: #f9f9f9 !important;
-      }
-      .text-fg-primary, .text-fg {
-        color: #1a1a1a !important;
-      }
-    `;
-
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: colorInversionStyles,
+      customCSS: '',
     });
 
     return {
@@ -254,7 +190,6 @@ export class GrokProvider extends BaseProvider {
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
         linksRemoved: options?.removeLinks || false,
-        colorsInverted: options?.invertColors || false,
         headerRemoved: options?.removeHeader || false,
         footerRemoved: options?.removeFooter || false,
       },

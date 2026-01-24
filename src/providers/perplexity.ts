@@ -97,19 +97,9 @@ export class PerplexityProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Inject styles with optional color inversion
-    const colorInversionStyles = options?.invertColors
-      ? `
-      html {
-        filter: invert(1) hue-rotate(180deg);
-        background-color: white !important;
-      }
-    `
-      : "";
-
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: colorInversionStyles,
+      customCSS: '',
     });
 
     return {
@@ -119,7 +109,6 @@ export class PerplexityProvider extends BaseProvider {
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
         linksRemoved: options?.removeLinks || false,
-        colorsInverted: options?.invertColors || false,
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
       },
