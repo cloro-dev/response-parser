@@ -38,6 +38,14 @@ export class PerplexityProvider extends BaseProvider {
     return cleaned;
   }
 
+  /**
+   * Remove Perplexity sources panel from HTML
+   */
+  removeSources(html: string): string {
+    // Remove the fixed right-side sources panel (contains citations/links and cookie dialog)
+    return html.replace(/<div[^>]*class="[^"]*fixed inset-y-0 right-0[^"]*"[^>]*>[\s\S]*?(?=<span[^>]*data-radix-focus-guard)/gi, '');
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
@@ -53,6 +61,13 @@ export class PerplexityProvider extends BaseProvider {
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
 
+    // Fix collapsed answer container: Perplexity uses JS animation to expand the
+    // answer area from height:48px. Without scripts, it stays collapsed.
+    finalHtml = finalHtml.replace(
+      /style="transition: none; overflow: hidden; height: 48px;"/gi,
+      ''
+    );
+
     // Remove header if requested
     if (removeHeader) {
       finalHtml = this.removeHeader(finalHtml);
@@ -63,14 +78,27 @@ export class PerplexityProvider extends BaseProvider {
       finalHtml = this.removeFooter(finalHtml);
     }
 
+    // Remove sources panel if requested
+    if (options?.removeSources) {
+      finalHtml = this.removeSources(finalHtml);
+    }
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
     }
 
+    // Always hide cookie consent banner via CSS
+    const customCSS = `
+      #cookie-consent,
+      [role="dialog"]:has(#cookie-consent) {
+        display: none !important;
+      }
+    `;
+
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: '',
+      customCSS,
     });
 
     return {
@@ -82,6 +110,8 @@ export class PerplexityProvider extends BaseProvider {
         linksRemoved: options?.removeLinks || false,
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
+        cookieBannerRemoved: true,
+        sourcesRemoved: options?.removeSources || false,
       } as ProviderMetadata,
     };
   }
