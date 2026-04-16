@@ -46,6 +46,40 @@ export class GrokProvider extends BaseProvider {
     // Build CSS based on options
     let stylesToInject = '';
 
+    // Always-on: hide cookie/privacy policy banner (Grok uses data-cookie-banner attribute)
+    stylesToInject += `
+      [data-cookie-banner],
+      [data-cookie-banner="true"] {
+        display: none !important;
+      }
+    `;
+
+    // Always-on: hide rate-limit banners and toast notifications
+    stylesToInject += `
+      [data-sonner-toaster],
+      [data-sonner-toast],
+      [class*="sonner-toast"] {
+        display: none !important;
+      }
+    `;
+
+    // Sources panel removal via regex (CSS selectors don't reliably hide this element)
+    if (options?.removeSources) {
+      // Remove the sources panel wrapper containing the aside
+      finalHtml = finalHtml.replace(/<div[^>]*class="[^"]*h-dvh[^"]*flex-shrink-0[^"]*max-w-[^"]*"[^>]*>[\s\S]*?<\/aside>[\s\S]*?(?=<section)/gi, '');
+
+      // Hide the inline "N sources" trigger button and vaul-drawer overlay via CSS
+      stylesToInject += `
+        div[data-state] > div.flex.flex-row.gap-1.items-center.rounded-full.cursor-pointer {
+          display: none !important;
+        }
+        [vaul-drawer][vaul-drawer-direction="right"],
+        [vaul-overlay] {
+          display: none !important;
+        }
+      `;
+    }
+
     // Header hiding via CSS
     if (options?.removeHeader) {
       stylesToInject += `
@@ -87,6 +121,8 @@ export class GrokProvider extends BaseProvider {
         linksRemoved: options?.removeLinks || false,
         headerRemoved: options?.removeHeader || false,
         footerRemoved: options?.removeFooter || false,
+        cookieBannerRemoved: true,
+        sourcesRemoved: options?.removeSources || false,
       } as ProviderMetadata,
     };
   }

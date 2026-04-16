@@ -20,6 +20,7 @@ export interface ParseOptions {
   removeHeader?: boolean;
   removeFooter?: boolean;
   removeSidebar?: boolean;
+  removeSources?: boolean;
 }
 
 export interface ProviderConfig {
@@ -54,6 +55,7 @@ export interface ProviderMetadata {
   sidebarRemoved?: boolean;
   linksRemoved?: boolean;
   cookieBannerRemoved?: boolean;
+  sourcesRemoved?: boolean;
   detectionConfidence?: number;
 }
 

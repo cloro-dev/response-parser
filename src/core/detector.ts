@@ -27,10 +27,15 @@ export class ProviderDetector {
       },
     ],
     PERPLEXITY: [
+      // Check for Perplexity domain
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('perplexity.ai');
+      },
       // Check for Perplexity-specific structure
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
-        return html.includes('perplexity.ai') || html.includes('prose');
+        return html.includes('prose') && !html.includes('grok.com') && !html.includes('chatgpt.com');
       },
     ],
     COPILOT: [
@@ -60,10 +65,15 @@ export class ProviderDetector {
       },
     ],
     GROK: [
-      // Check for Grok-specific structure
+      // Check for Grok domain
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
         return html.includes('grok.com') || html.includes('x.ai');
+      },
+      // Check for Grok CDN or app-specific patterns
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('cdn.grok.com') || html.includes('vaul-drawer');
       },
     ],
   };
