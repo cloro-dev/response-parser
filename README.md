@@ -236,9 +236,17 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ## What's Changed
 
+### v0.4.1
+
+- ✅ **Added** Copilot `removeSources` and `removeSidebar` support
+- ✅ **Added** Copilot automatic cookie banner removal
+- ✅ **Added** AI Mode `removeSidebar` support (history panel removal)
+- ✅ **Fixed** AI Mode sidebar/footer removal and detection
+- ✅ **Added** AI Mode automatic cookie consent banner hiding
+
 ### v0.4.0
 
-- ✅ **Added** `removeSources` option for Gemini, Perplexity, Copilot, and Grok
+- ✅ **Added** `removeSources` option for Gemini, Perplexity, and Grok
 - ✅ **Added** automatic cookie/privacy banner removal for Perplexity and Grok
 - ✅ **Fixed** Perplexity collapsed answer container (JS animation height workaround)
 
