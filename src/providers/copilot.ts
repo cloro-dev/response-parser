@@ -64,15 +64,22 @@ export class CopilotProvider extends BaseProvider {
   }
 
   /**
+   * Remove Copilot sources/references panel from HTML
+   */
+  removeSources(html: string): string {
+    // Remove the references panel (right-side panel with width: 352px containing citations)
+    return html.replace(/<div[^>]*class="[^"]*relative h-full overflow-hidden will-change-auto[^"]*"[^>]*style="[^"]*width:\s*352px[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*pointer-events-none fixed[^"]*")/gi, '');
+  }
+
+  /**
    * Remove Copilot sidebar from HTML
    */
   removeSidebar(html: string): string {
     let cleaned = html;
 
-    // Remove the inner sidebar div
-    // Starts with: <div class="absolute h-full w-0 will-change-auto max-md:bg-sidebar-light..." style="width: 52px;">
-    // Ends right before: <main class="relative flex w-full min-w-0 will-change-auto...
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*absolute h-full w-0 will-change-auto max-md:bg-sidebar-light[^"]*"[^>]*style="[^"]*"[^>]*>.*?<main/gis, '<main');
+    // Remove the sidebar container (everything between bg-sidebar-light wrapper and <main>)
+    // Handles both old layout (absolute h-full w-0) and new layout (flex h-full overflow-hidden bg-sidebar-light)
+    cleaned = cleaned.replace(/<div[^>]*class="[^"]*bg-sidebar-light[^"]*"[^>]*>[\s\S]*?(?=<main)/gi, '');
 
     return cleaned;
   }
@@ -110,6 +117,11 @@ export class CopilotProvider extends BaseProvider {
       finalHtml = this.removeSidebar(finalHtml);
     }
 
+    // Remove sources/references panel if requested
+    if (options?.removeSources) {
+      finalHtml = this.removeSources(finalHtml);
+    }
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
@@ -130,6 +142,7 @@ export class CopilotProvider extends BaseProvider {
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
+        sourcesRemoved: options?.removeSources || false,
         linksRemoved: options?.removeLinks || false,
       } as ProviderMetadata,
     };
