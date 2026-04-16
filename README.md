@@ -114,7 +114,7 @@ Parse an AI response with auto-detected provider.
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Copilot & AI Mode)
 - `removeSources`: `boolean` - Remove sources/references panel (default: `false`, Gemini, Perplexity, Copilot & Grok)
 
-> **Note:** Cookie/privacy banners are automatically removed for AI Mode, Copilot, Grok, and Perplexity — no option needed.
+> **Note:** Cookie/privacy banners are automatically removed for ChatGPT, AI Mode, Copilot, Grok, and Perplexity — no option needed.
 
 **Returns:** `ParsedResponse | null`
 
@@ -152,7 +152,7 @@ type AIProvider =
 
 | Provider    | Status | Features                                                    |
 | ----------- | ------ | ----------------------------------------------------------- |
-| ChatGPT     | ✅     | Sidebar, header, footer removal                             |
+| ChatGPT     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
 | Gemini      | ✅     | Sidebar, header, footer, sources removal                    |
 | Perplexity  | ✅     | Header, footer, sources removal, auto cookie banner hiding  |
 | Copilot     | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
@@ -235,6 +235,11 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### v0.4.2
+
+- ✅ **Added** ChatGPT automatic cookie banner removal
+- ✅ **Fixed** Copilot sources removal regex to handle variable panel widths
 
 ### v0.4.1
 
