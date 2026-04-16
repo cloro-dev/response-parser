@@ -47,6 +47,21 @@ export class GeminiProvider extends BaseProvider {
     return html.replace(/<bard-sidenav[^>]*>.*?<\/bard-sidenav>/gis, '');
   }
 
+  /**
+   * Remove Gemini sources panel from HTML
+   */
+  removeSources(html: string): string {
+    let cleaned = html;
+
+    // Remove the context-sidebar element (contains source cards)
+    cleaned = cleaned.replace(/<context-sidebar[^>]*>[\s\S]*?<\/context-sidebar>/gi, '');
+
+    // Remove the sources-sidebar-button trigger
+    cleaned = cleaned.replace(/<sources-sidebar-button[^>]*>[\s\S]*?<\/sources-sidebar-button>/gi, '');
+
+    return cleaned;
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text, sources } = this.extractContent(response);
 
@@ -77,6 +92,11 @@ export class GeminiProvider extends BaseProvider {
       finalHtml = this.removeSidebar(finalHtml);
     }
 
+    // Remove sources panel if requested
+    if (options?.removeSources) {
+      finalHtml = this.removeSources(finalHtml);
+    }
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
@@ -97,6 +117,7 @@ export class GeminiProvider extends BaseProvider {
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
         sidebarRemoved: options?.removeSidebar || false,
+        sourcesRemoved: options?.removeSources || false,
         linksRemoved: options?.removeLinks || false,
       } as ProviderMetadata,
     };
