@@ -67,8 +67,8 @@ export class CopilotProvider extends BaseProvider {
    * Remove Copilot sources/references panel from HTML
    */
   removeSources(html: string): string {
-    // Remove the references panel (right-side panel with width: 352px containing citations)
-    return html.replace(/<div[^>]*class="[^"]*relative h-full overflow-hidden will-change-auto[^"]*"[^>]*style="[^"]*width:\s*352px[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*pointer-events-none fixed[^"]*")/gi, '');
+    // Remove the references panel (right-side panel with variable width containing citations)
+    return html.replace(/<div[^>]*class="[^"]*relative h-full overflow-hidden will-change-auto[^"]*"[^>]*style="[^"]*width:\s*\d+px[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*pointer-events-none (?:fixed|absolute)[^"]*")/gi, '');
   }
 
   /**

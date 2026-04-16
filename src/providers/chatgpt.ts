@@ -112,6 +112,14 @@ export class ChatGPTProvider extends BaseProvider {
     return cleaned;
   }
 
+  /**
+   * Remove ChatGPT cookie banner from HTML
+   */
+  removeCookieBanner(html: string): string {
+    // Remove the cookie dialog banner (matched by cookie-policy URL, language-agnostic)
+    return html.replace(/<div[^>]*role="dialog"[^>]*>[\s\S]*?openai\.com\/policies\/cookie-policy[\s\S]*?<\/div><\/div><\/div><\/div><\/div><\/div>/gi, '');
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
@@ -125,6 +133,9 @@ export class ChatGPTProvider extends BaseProvider {
 
     // Sanitize HTML
     finalHtml = this.sanitizeHtml(finalHtml);
+
+    // Always remove cookie banner
+    finalHtml = this.removeCookieBanner(finalHtml);
 
     // Remove header if requested
     if (options?.removeHeader) {
@@ -157,6 +168,7 @@ export class ChatGPTProvider extends BaseProvider {
       text,
       metadata: {
         isFullDocument: this.isFullDocument(finalHtml),
+        cookieBannerRemoved: true,
         headerRemoved: options?.removeHeader || false,
         sidebarRemoved: options?.removeSidebar || false,
         footerRemoved: removeFooter,
