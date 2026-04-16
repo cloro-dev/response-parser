@@ -1,6 +1,6 @@
 # @cloro-dev/response-parser
 
-A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Copilot, and Google AI Overview/Mode.
+A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Copilot, Grok, and Google AI Overview/Mode.
 
 > **Framework-Agnostic**: This library returns HTML strings that can be rendered in any framework (React, Vue, Svelte, vanilla JS, etc.).
 
@@ -111,7 +111,10 @@ Parse an AI response with auto-detected provider.
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
 - `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
 - `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini & Copilot)
+- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Copilot & AI Mode)
+- `removeSources`: `boolean` - Remove sources/references panel (default: `false`, Gemini, Perplexity, Copilot & Grok)
+
+> **Note:** Cookie/privacy banners are automatically removed for AI Mode, Copilot, Grok, and Perplexity — no option needed.
 
 **Returns:** `ParsedResponse | null`
 
@@ -140,22 +143,22 @@ type AIProvider =
   | 'GEMINI'
   | 'PERPLEXITY'
   | 'COPILOT'
-  | 'AI_OVERVIEW'
-  | 'AI_MODE'
+  | 'AIOVERVIEW'
+  | 'AIMODE'
   | 'GROK';
 ```
 
 ## Supported Providers
 
-| Provider    | Status | Features                                 |
-| ----------- | ------ | ---------------------------------------- |
-| ChatGPT     | ✅     | Sidebar hiding                           |
-| Gemini      | ✅     | Navbar removal                           |
-| Perplexity  | ✅     | Link removal, UI element removal         |
-| Copilot     | ✅     | UI element hiding                        |
-| AI Overview | ✅     | WIZ data extraction                      |
-| AI Mode     | ✅     | Google UI hiding                         |
-| Grok        | ✅     | UI element removal                       |
+| Provider    | Status | Features                                                    |
+| ----------- | ------ | ----------------------------------------------------------- |
+| ChatGPT     | ✅     | Sidebar, header, footer removal                             |
+| Gemini      | ✅     | Sidebar, header, footer, sources removal                    |
+| Perplexity  | ✅     | Header, footer, sources removal, auto cookie banner hiding  |
+| Copilot     | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
+| AI Overview | ✅     | Header, footer removal, WIZ data extraction                 |
+| AI Mode     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
+| Grok        | ✅     | Sources removal, auto cookie banner hiding                  |
 
 ## Common Use Cases
 
@@ -173,9 +176,10 @@ const parsed = parseAiResponse(response, {
 
 ```typescript
 const parsed = parseAiResponse(response, {
-  removeHeader: true, // Remove top navigation bar
-  removeFooter: true, // Remove follow-up input box
-  removeLinks: true, // Remove all hyperlinks
+  removeHeader: true,  // Remove top navigation bar
+  removeFooter: true,  // Remove follow-up input box
+  removeLinks: true,   // Remove all hyperlinks
+  removeSources: true, // Remove sources/references panel
 });
 ```
 
@@ -231,6 +235,17 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### v0.4.0
+
+- ✅ **Added** `removeSources` option for Gemini, Perplexity, Copilot, and Grok
+- ✅ **Added** automatic cookie/privacy banner removal for Perplexity and Grok
+- ✅ **Fixed** Perplexity collapsed answer container (JS animation height workaround)
+
+### v0.3.0
+
+- ✅ **Added** Grok provider support
+- ✅ **Simplified** codebase and removed colour inversion
 
 ### v0.2.0
 
