@@ -48,13 +48,15 @@ export class ProviderDetector {
     AIOVERVIEW: [
       // Check for AI Overview specific structure
       (response: any) => {
-        // Check for aioverview nested structure
         if (response?.result?.aioverview?.text) return true;
         if (response?.aioverview?.text) return true;
-
-        // Check for WIZ_global_data (AI Overview specific)
         const html = response?.result?.html || response?.html || '';
-        return html.includes('WIZ_global_data') || html.includes('DnVkpd');
+        return html.includes('DnVkpd');
+      },
+      // Check for WIZ_global_data without AI Mode markers
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('WIZ_global_data') && !html.includes('aim-mars') && !html.includes('ho072b');
       },
     ],
     AIMODE: [
@@ -62,6 +64,11 @@ export class ProviderDetector {
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
         return html.includes('DZ13He') || html.includes('wYq63b') || html.includes('AI Mode');
+      },
+      // Check for AI Mode specific input/sidebar
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('aim-mars') || html.includes('ho072b');
       },
     ],
     GROK: [

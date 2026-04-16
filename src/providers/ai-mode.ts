@@ -74,31 +74,25 @@ export class AIModeProvider extends BaseProvider {
   removeSidebar(html: string): string {
     let cleaned = html;
 
-    // Remove the AI Mode history panel/slide-over
-    // Target by aria-label and class
+    // Remove the AI Mode history panel/dialog
+    // Target by aria-label (handles both attribute orderings)
     cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*ho072b[^"]*"[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?<\/div><\/div><\/div><\/div><\/div><\/div>/gis,
+      /<div[^>]*aria-label="AI Mode history"[^>]*class="[^"]*ho072b[^"]*"[^>]*>[\s\S]*?(?=<!--TgQPHd)/gi,
+      ""
+    );
+    // Fallback: class before aria-label
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*ho072b[^"]*"[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?(?=<!--TgQPHd)/gi,
       ""
     );
 
-    // Remove the floating action button (FAB) with "Start new search" and "AI Mode history"
-    // Target by jsname and class, contains OEwhSe wrapper
-    cleaned = cleaned.replace(
-      /<div[^>]*jsname="NlVIob"[^>]*class="[^"]*qEn1od[^"]*"[^>]*>[\s\S]*?<\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Fallback: Target by inner class OEwhSe
+    // Remove the floating action buttons (OEwhSe wrapper)
     cleaned = cleaned.replace(
       /<div[^>]*class="[^"]*OEwhSe[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
       ""
     );
 
-    // Fallback: Target buttons with aria-label
-    cleaned = cleaned.replace(
-      /<button[^>]*aria-label="Start new search"[^>]*>[\s\S]*?<\/button>/gis,
-      ""
-    );
+    // Remove buttons with aria-label
     cleaned = cleaned.replace(
       /<button[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?<\/button>/gis,
       ""
@@ -167,22 +161,27 @@ export class AIModeProvider extends BaseProvider {
       `;
     }
 
-    // Sidebar removal styles
-    if (options?.removeSidebar) {
-      stylesToInject += `
-        /* Sidebar hiding */
-        #leftnav, #sidetogether {
-          display: none !important;
-        }
-      `;
-    }
-
     // Footer removal styles
     if (removeFooter) {
       stylesToInject += `
         /* Footer hiding */
         footer, #footer, .fbar,
         .pdp-nav, [aria-label="Main menu"], .gb_Td, .gb_L {
+          display: none !important;
+        }
+        /* Hide the "Ask anything" input bar */
+        [data-xid="aim-mars-input-plate"],
+        .UAbVe, .y4VEUd, .t0ITR.hh3ttd {
+          display: none !important;
+        }
+      `;
+    }
+
+    // Sidebar removal styles
+    if (options?.removeSidebar) {
+      stylesToInject += `
+        /* Hide AI Mode history panel */
+        .ho072b, .OEwhSe, .qEn1od {
           display: none !important;
         }
       `;
