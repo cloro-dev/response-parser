@@ -28,13 +28,25 @@ export class PerplexityProvider extends BaseProvider {
   }
 
   /**
-   * Remove Perplexity footer/followup input from HTML
+   * Remove Perplexity footer/followup input from HTML.
+   * Uses CSS hiding — the footer's deeply nested DOM makes regex counting
+   * of closing </div> tags fragile across Perplexity versions.
    */
-  removeFooter(html: string): string {
+  removeFooter(_html: string): string {
+    // Handled via CSS injection in parse() for reliability
+    return _html;
+  }
+
+  /**
+   * Remove Perplexity left sidebar navigation from HTML
+   */
+  removeSidebar(html: string): string {
     let cleaned = html;
-    const regex =
-      /<div[^>]*class="[^"]*erp-sidecar:fixed erp-sidecar:w-full bottom-safeAreaInsetBottom p-md pointer-events-none z-10 absolute border-subtlest ring-subtlest divide-subtlest bg-transparent[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*fixed inset-y-0 right-0[^"]*")/gis;
-    cleaned = cleaned.replace(regex, "");
+    // Remove the sidebar nav element and its width-holder parent
+    cleaned = cleaned.replace(
+      /<div[^>]*class="[^"]*w-sideBarWidth[^"]*"[^>]*>[\s\S]*?<\/nav>[\s\S]*?<\/div>/gi,
+      ""
+    );
     return cleaned;
   }
 
@@ -68,9 +80,21 @@ export class PerplexityProvider extends BaseProvider {
       ''
     );
 
+    // Strip inline padding-right used for the sources sidecar panel
+    // (e.g. padding-right: 500px) which squeezes content when sources are removed
+    finalHtml = finalHtml.replace(
+      /padding-right:\s*\d+px/gi,
+      'padding-right: 0px'
+    );
+
     // Remove header if requested
     if (removeHeader) {
       finalHtml = this.removeHeader(finalHtml);
+    }
+
+    // Remove sidebar if requested
+    if (options?.removeSidebar) {
+      finalHtml = this.removeSidebar(finalHtml);
     }
 
     // Remove footer if requested
@@ -88,10 +112,53 @@ export class PerplexityProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Always hide cookie consent banner via CSS
+    // Always hide cookie consent banner + fix layout for iframe rendering.
+    // Perplexity's external CSS defines Tailwind utilities that create a complex
+    // flex layout depending on JS initialization and sidebar presence. Without
+    // scripts and sidebar, the layout breaks. These overrides force a simple
+    // single-column flow that works inside an iframe.
     const customCSS = `
       #cookie-consent,
       [role="dialog"]:has(#cookie-consent) {
+        display: none !important;
+      }
+      /* Hide sidebar width holder */
+      [class*="w-sideBarWidth"] {
+        display: none !important;
+      }
+      /* Force all flex containers in the layout chain to column flow and full width */
+      #root, #root > div, #root > div > div {
+        display: block !important;
+        height: auto !important;
+        max-height: none !important;
+        width: 100% !important;
+        padding: 0 !important;
+      }
+      main {
+        display: block !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      main > div {
+        height: auto !important;
+        overflow: visible !important;
+      }
+      /* Ensure scrollable container and its children flow naturally */
+      [class*="scrollable-container"] {
+        height: auto !important;
+        overflow: visible !important;
+      }
+      /* Let thread content fill available width */
+      [class*="max-w-threadContentWidth"] {
+        max-width: 100% !important;
+      }
+      /* Fix radix focus guards taking space */
+      [data-radix-focus-guard] {
+        display: none !important;
+      }
+      /* Hide the "Ask a follow-up" footer bar */
+      [class*="bottom-safeAreaInsetBottom"] {
         display: none !important;
       }
     `;
@@ -110,6 +177,7 @@ export class PerplexityProvider extends BaseProvider {
         linksRemoved: options?.removeLinks || false,
         headerRemoved: removeHeader,
         footerRemoved: removeFooter,
+        sidebarRemoved: options?.removeSidebar || false,
         cookieBannerRemoved: true,
         sourcesRemoved: options?.removeSources || false,
       } as ProviderMetadata,
