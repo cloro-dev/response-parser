@@ -244,7 +244,8 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 - ✅ **Fixed** ChatGPT `removeFooter` now hides the composer input form and collapses blank space
 - ✅ **Fixed** ChatGPT `removeSidebar` now hides leftover sidebar items via CSS
 - ✅ **Fixed** AI Mode `removeHeader` now hides the "New thread" compose button
-- ✅ **Improved** CSS overrides are now conditional — only injected when the corresponding `remove*` option is true (Perplexity, ChatGPT)
+- ✅ **Fixed** Copilot `removeHeader` now hides the sticky header (share button)
+- ✅ **Improved** CSS overrides are now conditional — only injected when the corresponding `remove*` option is true (Perplexity, ChatGPT, Copilot)
 
 ### v0.4.2
 
