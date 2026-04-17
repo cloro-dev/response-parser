@@ -170,22 +170,23 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Fix layout for iframe rendering: remove viewport-height lock
-    // and collapse the sidebar column that remains after regex removal
-    const customCSS = `
-      /* Remove viewport-height lock that creates blank space in iframes */
-      .h-svh {
-        height: auto !important;
-      }
-      /* Collapse the sidebar flex column */
-      [data-sidebar-item] {
-        display: none !important;
-      }
-      /* Skip-to-content accessibility element */
-      [data-skip-to-content] {
-        display: none !important;
-      }
-    `;
+    // Build CSS overrides conditionally based on which remove* options are active
+    let customCSS = '';
+
+    if (options?.removeSidebar) {
+      customCSS += `
+        [data-sidebar-item] { display: none !important; }
+        [data-skip-to-content] { display: none !important; }
+        .h-svh { height: auto !important; }
+      `;
+    }
+
+    if (removeFooter) {
+      customCSS += `
+        form[data-type="unified-composer"] { display: none !important; }
+        #thread { min-height: auto !important; }
+      `;
+    }
 
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
