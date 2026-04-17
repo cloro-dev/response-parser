@@ -112,56 +112,54 @@ export class PerplexityProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Always hide cookie consent banner + fix layout for iframe rendering.
-    // Perplexity's external CSS defines Tailwind utilities that create a complex
-    // flex layout depending on JS initialization and sidebar presence. Without
-    // scripts and sidebar, the layout breaks. These overrides force a simple
-    // single-column flow that works inside an iframe.
-    const customCSS = `
+    // Build CSS overrides conditionally based on which remove* options are active
+    let customCSS = `
       #cookie-consent,
       [role="dialog"]:has(#cookie-consent) {
         display: none !important;
       }
-      /* Hide sidebar width holder */
-      [class*="w-sideBarWidth"] {
-        display: none !important;
-      }
-      /* Force all flex containers in the layout chain to column flow and full width */
-      #root, #root > div, #root > div > div {
-        display: block !important;
-        height: auto !important;
-        max-height: none !important;
-        width: 100% !important;
-        padding: 0 !important;
-      }
-      main {
-        display: block !important;
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-      }
-      main > div {
-        height: auto !important;
-        overflow: visible !important;
-      }
-      /* Ensure scrollable container and its children flow naturally */
-      [class*="scrollable-container"] {
-        height: auto !important;
-        overflow: visible !important;
-      }
-      /* Let thread content fill available width */
-      [class*="max-w-threadContentWidth"] {
-        max-width: 100% !important;
-      }
-      /* Fix radix focus guards taking space */
       [data-radix-focus-guard] {
         display: none !important;
       }
-      /* Hide the "Ask a follow-up" footer bar */
-      [class*="bottom-safeAreaInsetBottom"] {
-        display: none !important;
-      }
     `;
+
+    if (options?.removeSidebar) {
+      customCSS += `
+        [class*="w-sideBarWidth"] { display: none !important; }
+        #root, #root > div, #root > div > div {
+          display: block !important;
+          height: auto !important;
+          max-height: none !important;
+          width: 100% !important;
+          padding: 0 !important;
+        }
+        main {
+          display: block !important;
+          height: auto !important;
+          max-height: none !important;
+          overflow: visible !important;
+        }
+        main > div {
+          height: auto !important;
+          overflow: visible !important;
+        }
+        [class*="scrollable-container"] {
+          height: auto !important;
+          overflow: visible !important;
+        }
+        [class*="max-w-threadContentWidth"] {
+          max-width: 100% !important;
+        }
+      `;
+    }
+
+    if (removeFooter) {
+      customCSS += `
+        [class*="bottom-safeAreaInsetBottom"] {
+          display: none !important;
+        }
+      `;
+    }
 
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
