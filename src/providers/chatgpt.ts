@@ -170,9 +170,26 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
+    // Fix layout for iframe rendering: remove viewport-height lock
+    // and collapse the sidebar column that remains after regex removal
+    const customCSS = `
+      /* Remove viewport-height lock that creates blank space in iframes */
+      .h-svh {
+        height: auto !important;
+      }
+      /* Collapse the sidebar flex column */
+      [data-sidebar-item] {
+        display: none !important;
+      }
+      /* Skip-to-content accessibility element */
+      [data-skip-to-content] {
+        display: none !important;
+      }
+    `;
+
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: "",
+      customCSS,
     });
 
     return {
