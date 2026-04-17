@@ -120,6 +120,14 @@ export class ChatGPTProvider extends BaseProvider {
     return html.replace(/<div[^>]*role="dialog"[^>]*>[\s\S]*?openai\.com\/policies\/cookie-policy[\s\S]*?<\/div><\/div><\/div><\/div><\/div><\/div>/gi, '');
   }
 
+  /**
+   * Remove ChatGPT sources/search flyout panel from HTML
+   */
+  removeSources(html: string): string {
+    // Remove the stage-thread-flyout panel (right-side sources panel for search results)
+    return html.replace(/<div[^>]*data-testid="stage-thread-flyout"[^>]*>[\s\S]*?(?=<\/div><div><\/div><\/div><\/div>)/gi, '');
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
@@ -152,6 +160,11 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeFooter(finalHtml);
     }
 
+    // Remove sources panel if requested
+    if (options?.removeSources) {
+      finalHtml = this.removeSources(finalHtml);
+    }
+
     // Remove links if requested
     if (options?.removeLinks) {
       finalHtml = this.removeLinks(finalHtml);
@@ -172,6 +185,7 @@ export class ChatGPTProvider extends BaseProvider {
         headerRemoved: options?.removeHeader || false,
         sidebarRemoved: options?.removeSidebar || false,
         footerRemoved: removeFooter,
+        sourcesRemoved: options?.removeSources || false,
         linksRemoved: options?.removeLinks || false,
       } as ProviderMetadata,
     };
