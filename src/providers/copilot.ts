@@ -127,9 +127,17 @@ export class CopilotProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
+    let customCSS = '';
+
+    if (removeHeader) {
+      customCSS += `
+        [data-testid="sticky-header"] { display: none !important; }
+      `;
+    }
+
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: '',
+      customCSS,
     });
 
     return {
