@@ -111,7 +111,7 @@ Parse an AI response with auto-detected provider.
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
 - `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
 - `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Copilot & AI Mode)
+- `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & AI Mode)
 - `removeSources`: `boolean` - Remove sources/references panel (default: `false`, Gemini, Perplexity, Copilot & Grok)
 
 > **Note:** Cookie/privacy banners are automatically removed for ChatGPT, AI Mode, Copilot, Grok, and Perplexity — no option needed.
@@ -154,7 +154,7 @@ type AIProvider =
 | ----------- | ------ | ----------------------------------------------------------- |
 | ChatGPT     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
 | Gemini      | ✅     | Sidebar, header, footer, sources removal                    |
-| Perplexity  | ✅     | Header, footer, sources removal, auto cookie banner hiding  |
+| Perplexity  | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
 | Copilot     | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
 | AI Overview | ✅     | Header, footer removal, WIZ data extraction                 |
 | AI Mode     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
@@ -235,6 +235,16 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### v0.4.3
+
+- ✅ **Added** Perplexity `removeSidebar` support (left navigation removal)
+- ✅ **Fixed** Perplexity layout rendering in iframes (CSS overrides for single-column flow)
+- ✅ **Fixed** Perplexity `removeFooter` now hides the "Ask a follow-up" bar via CSS
+- ✅ **Fixed** ChatGPT `removeFooter` now hides the composer input form and collapses blank space
+- ✅ **Fixed** ChatGPT `removeSidebar` now hides leftover sidebar items via CSS
+- ✅ **Fixed** AI Mode `removeHeader` now hides the "New thread" compose button
+- ✅ **Improved** CSS overrides are now conditional — only injected when the corresponding `remove*` option is true (Perplexity, ChatGPT)
 
 ### v0.4.2
 
