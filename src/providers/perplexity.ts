@@ -51,11 +51,17 @@ export class PerplexityProvider extends BaseProvider {
   }
 
   /**
-   * Remove Perplexity sources panel from HTML
+   * Remove Perplexity sources panel from HTML.
+   *
+   * Why: Perplexity's sources panel is the deeply-nested
+   * `fixed inset-y-0 right-0` container that wraps a citations tabpanel.
+   * We can't reliably balance its nested </div>s with regex, and a partial
+   * strip orphans the panel's children visibly. CSS-only hiding (see
+   * parse()) is the load-bearing approach — `display:none` on the wrapper
+   * collapses every descendant.
    */
   removeSources(html: string): string {
-    // Remove the fixed right-side sources panel (contains citations/links and cookie dialog)
-    return html.replace(/<div[^>]*class="[^"]*fixed inset-y-0 right-0[^"]*"[^>]*>[\s\S]*?(?=<span[^>]*data-radix-focus-guard)/gi, '');
+    return html;
   }
 
   parse(response: any, options?: ParseOptions): ParsedResponse {
@@ -149,6 +155,14 @@ export class PerplexityProvider extends BaseProvider {
         }
         [class*="max-w-threadContentWidth"] {
           max-width: 100% !important;
+        }
+      `;
+    }
+
+    if (options?.removeSources) {
+      customCSS += `
+        div[class*="fixed"][class*="inset-y-0"][class*="right-0"] {
+          display: none !important;
         }
       `;
     }
