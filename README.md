@@ -319,6 +319,40 @@ pnpm type-check
 pnpm lint
 ```
 
+## Release
+
+1. Log in to npm with an account that can publish to `@cloro-dev`:
+
+   ```bash
+   npm login
+   ```
+
+2. Run the checks and the build:
+
+   ```bash
+   pnpm type-check && pnpm lint && pnpm build
+   ```
+
+3. Increase the version. This changes `package.json` and creates a git commit and tag:
+
+   ```bash
+   npm version patch   # 0.4.5 → 0.4.6
+   npm version minor   # 0.4.5 → 0.5.0
+   npm version major   # 0.4.5 → 1.0.0
+   ```
+
+4. Publish. `prepublishOnly` builds the package again before the upload:
+
+   ```bash
+   npm publish
+   ```
+
+5. Push the commit and the tag, and add an entry under "What's Changed":
+
+   ```bash
+   git push --follow-tags
+   ```
+
 ## License
 
 MIT © cloro
