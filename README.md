@@ -306,9 +306,6 @@ pnpm install
 # Build
 pnpm build
 
-# Test
-pnpm test
-
 # Development mode
 pnpm dev
 
