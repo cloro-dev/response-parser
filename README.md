@@ -236,7 +236,7 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ## What's Changed
 
-### Unreleased
+### v0.5.0
 
 - ✅ **Fixed** `require("@cloro-dev/response-parser")` failed with `exports is not defined`. The CommonJS build is now `dist/index.cjs`
 - ✅ **Fixed** Perplexity `removeSources` now hides the open "Sources" popover
