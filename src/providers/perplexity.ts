@@ -58,7 +58,8 @@ export class PerplexityProvider extends BaseProvider {
    * We can't reliably balance its nested </div>s with regex, and a partial
    * strip orphans the panel's children visibly. CSS-only hiding (see
    * parse()) is the load-bearing approach — `display:none` on the wrapper
-   * collapses every descendant.
+   * collapses every descendant. The same rule hides the open "Sources"
+   * popover, which Perplexity renders in a Radix popper at the body root.
    */
   removeSources(html: string): string {
     return html;
@@ -121,7 +122,15 @@ export class PerplexityProvider extends BaseProvider {
     // Build CSS overrides conditionally based on which remove* options are active
     let customCSS = `
       #cookie-consent,
-      [role="dialog"]:has(#cookie-consent) {
+      [role="dialog"]:has(#cookie-consent),
+      div[role="dialog"][class*="fixed"][class*="bottom-2"] {
+        display: none !important;
+      }
+      /* Login prompts: the full-page modal and the corner card. The #root
+         prefix keeps the rule above the removeSidebar layout overrides. */
+      [data-type="portal"]:has([data-testid="login-modal"]),
+      #root div[class*="fixed"]:has([data-testid="login-modal"]),
+      div[class*="fixed"]:has([data-testid="login-modal"]) {
         display: none !important;
       }
       [data-radix-focus-guard] {
@@ -161,7 +170,8 @@ export class PerplexityProvider extends BaseProvider {
 
     if (options?.removeSources) {
       customCSS += `
-        div[class*="fixed"][class*="inset-y-0"][class*="right-0"] {
+        div[class*="fixed"][class*="inset-y-0"][class*="right-0"],
+        [data-radix-popper-content-wrapper] {
           display: none !important;
         }
       `;

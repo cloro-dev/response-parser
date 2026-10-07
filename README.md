@@ -109,12 +109,12 @@ Parse an AI response with auto-detected provider.
 **Options:**
 
 - `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
-- `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
-- `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`, ChatGPT, Perplexity, Gemini, Copilot, AI Overview & AI Mode)
+- `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`; `true` for AI Overview & AI Mode. ChatGPT, Perplexity, Gemini, Copilot, Grok, AI Overview & AI Mode)
+- `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`; `true` for AI Overview & AI Mode. ChatGPT, Perplexity, Gemini, Copilot, Grok, AI Overview & AI Mode)
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & AI Mode)
-- `removeSources`: `boolean` - Remove sources/references panel (default: `false`, Gemini, Perplexity, Copilot & Grok)
+- `removeSources`: `boolean` - Remove sources/references panel (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & Grok)
 
-> **Note:** Cookie/privacy banners are automatically removed for ChatGPT, AI Mode, Copilot, Grok, and Perplexity — no option needed.
+> **Note:** Cookie/privacy banners are automatically removed for ChatGPT, AI Mode, Copilot, Grok, and Perplexity — no option needed. Sign-in prompts are automatically removed for Gemini and Perplexity.
 
 **Returns:** `ParsedResponse | null`
 
@@ -235,6 +235,19 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### Unreleased
+
+- ✅ **Fixed** `require("@cloro-dev/response-parser")` failed with `exports is not defined`. The CommonJS build is now `dist/index.cjs`
+- ✅ **Fixed** Perplexity `removeSources` now hides the open "Sources" popover
+- ✅ **Fixed** Perplexity cookie banner (new markup) and sign-in prompts are now always hidden
+- ✅ **Fixed** Copilot `removeHeader` and `removeSidebar` no longer break the page layout. `removeSidebar` no longer hides the references panel
+- ✅ **Fixed** Copilot `removeHeader` now hides the date divider
+- ✅ **Fixed** ChatGPT `removeSources` now hides the sources flyout and the sources sheet on all pages
+- ✅ **Fixed** ChatGPT `removeFooter` and `removeSidebar` no longer change the page structure
+- ✅ **Fixed** Gemini sign-in prompt is now always hidden
+- ✅ **Fixed** AI Overview `removeFooter` now hides the Google footer
+- ✅ **Fixed** Provider detection no longer depends on pattern order for Gemini pages, and no longer reports a Google result page that links to Gemini as Gemini
 
 ### v0.4.3
 

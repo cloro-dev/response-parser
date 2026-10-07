@@ -105,7 +105,7 @@ export class AIOverviewProvider extends BaseProvider {
     if (removeFooter) {
       stylesToInject += `
         /* Footer hiding */
-        footer, #footer, .fbar,
+        footer, #footer, #sfooter, .fbar,
         .pdp-nav, [aria-label="Main menu"], .gb_Td, .gb_L {
           display: none !important;
         }

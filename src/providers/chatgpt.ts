@@ -55,61 +55,18 @@ export class ChatGPTProvider extends BaseProvider {
    * Remove ChatGPT sidebar from HTML
    */
   removeSidebar(html: string): string {
-    let cleaned = html;
-
-    // Hide Sidebar
-    cleaned = cleaned.replace(/<nav[^>]*>.*?<\/nav>/gis, "");
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*sidebar[^"]*"[^>]*>.*?<\/div>/gis,
-      ""
-    );
-
-    return cleaned;
+    // The sidebar wrapper is hidden with CSS in parse(). Its nested <div>s
+    // cannot be balanced with a regex.
+    return html.replace(/<nav[^>]*>.*?<\/nav>/gis, "");
   }
 
   /**
-   * Remove ChatGPT footer/composer from HTML
+   * Remove ChatGPT footer/composer from HTML.
+   * Handled with CSS in parse(). A regex cannot balance the nested <div>s of
+   * the composer, and a partial removal changes the page structure.
    */
   removeFooter(html: string): string {
-    let cleaned = html;
-
-    // Remove the thread-bottom-container (scroll button container)
-    cleaned = cleaned.replace(
-      /<div[^>]*id="thread-bottom-container"[^>]*>.*?<\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Remove the entire thread-bottom div (contains composer and inputs)
-    cleaned = cleaned.replace(
-      /<div[^>]*id="thread-bottom"[^>]*>.*?<\/div><\/div><\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Remove composer leading button (plus button)
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*\[grid-area:leading\][^"]*"[^>]*>.*?<\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Remove composer footer actions (search button, etc.)
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*\[grid-area:footer\][^"]*"[^>]*>.*?<\/div><\/div><\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Remove composer trailing buttons (dictate, send buttons)
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*\[grid-area:trailing\][^"]*"[^>]*>.*?<\/div><\/div><\/div>/gis,
-      ""
-    );
-
-    // Remove disclaimer footer (language-agnostic, targets view-transition-name)
-    cleaned = cleaned.replace(
-      /<div[^>]*\[view-transition-name:var\(--vt-disclaimer\)\][^>]*>.*?<\/div><\/div>/gis,
-      ""
-    );
-
-    return cleaned;
+    return html;
   }
 
   /**
@@ -121,11 +78,11 @@ export class ChatGPTProvider extends BaseProvider {
   }
 
   /**
-   * Remove ChatGPT sources/search flyout panel from HTML
+   * Remove ChatGPT sources/search flyout panel from HTML.
+   * Handled with CSS in parse().
    */
   removeSources(html: string): string {
-    // Remove the stage-thread-flyout panel (right-side sources panel for search results)
-    return html.replace(/<div[^>]*data-testid="stage-thread-flyout"[^>]*>[\s\S]*?(?=<\/div><div><\/div><\/div><\/div>)/gi, '');
+    return html;
   }
 
   parse(response: any, options?: ParseOptions): ParsedResponse {
@@ -175,6 +132,7 @@ export class ChatGPTProvider extends BaseProvider {
 
     if (options?.removeSidebar) {
       customCSS += `
+        #stage-slideover-sidebar { display: none !important; }
         [data-sidebar-item] { display: none !important; }
         [data-skip-to-content] { display: none !important; }
         .h-svh { height: auto !important; }
@@ -183,8 +141,19 @@ export class ChatGPTProvider extends BaseProvider {
 
     if (removeFooter) {
       customCSS += `
+        #thread-bottom-container { display: none !important; }
         form[data-type="unified-composer"] { display: none !important; }
         #thread { min-height: auto !important; }
+      `;
+    }
+
+    if (options?.removeSources) {
+      customCSS += `
+        /* Side flyout, and the modal sheet that replaces it on narrow pages */
+        [data-testid="stage-thread-flyout"],
+        [data-sheet-travel-state] {
+          display: none !important;
+        }
       `;
     }
 

@@ -20,10 +20,11 @@ export class ProviderDetector {
         const html = response?.result?.html || response?.html || '';
         return html.includes('bard-sidenav') || html.includes('mat-sidenav');
       },
-      // Check for Gemini-specific classes
+      // Check for Gemini-specific markup. The domain name alone also occurs in
+      // Google result pages that link to Gemini.
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
-        return html.includes('gemini.google.com') || html.includes('gem-sys-color');
+        return html.includes('<chat-app') || html.includes('gem-sys-color');
       },
     ],
     PERPLEXITY: [
@@ -50,25 +51,26 @@ export class ProviderDetector {
       (response: any) => {
         if (response?.result?.aioverview?.text) return true;
         if (response?.aioverview?.text) return true;
-        const html = response?.result?.html || response?.html || '';
-        return html.includes('DnVkpd');
+        return false;
       },
-      // Check for WIZ_global_data without AI Mode markers
+      // Check for a Google result page without AI Mode markers.
+      // WIZ_global_data alone also occurs in Gemini pages.
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
-        return html.includes('WIZ_global_data') && !html.includes('aim-mars') && !html.includes('ho072b');
+        return html.includes('id="gsr"') && !html.includes('aim-mars') && !html.includes('ho072b');
       },
     ],
     AIMODE: [
-      // Check for AI Mode specific elements
+      // Check for the AI Mode input and turn containers. The DZ13He header
+      // class also occurs in every Google result page.
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
-        return html.includes('DZ13He') || html.includes('wYq63b') || html.includes('AI Mode');
+        return html.includes('aim-mars');
       },
-      // Check for AI Mode specific input/sidebar
+      // Check for the AI Mode history panel
       (response: any) => {
         const html = response?.result?.html || response?.html || '';
-        return html.includes('aim-mars') || html.includes('ho072b');
+        return html.includes('ho072b');
       },
     ],
     GROK: [

@@ -19,9 +19,6 @@ export class GeminiProvider extends BaseProvider {
     // Remove the Google navbar with boqOnegoogleliteOgbOneGoogleBar class
     cleaned = cleaned.replace(/<div[^>]*class="[^"]*boqOnegoogleliteOgbOneGoogleBar[^"]*"[^>]*>.*?<\/div><\/div><\/div><\/div>/gis, '');
 
-    // Remove side-nav-menu-button (hamburger menu)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*side-nav-menu-button[^"]*"[^>]*>.*?<\/div>/gis, '');
-
     // Remove top-bar-actions (About Gemini, Gemini App, Subscriptions, For Business links)
     cleaned = cleaned.replace(/<top-bar-actions[^>]*>.*?<\/top-bar-actions>/gis, '');
 
@@ -102,9 +99,21 @@ export class GeminiProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
+    // Always-on: hide the "Sign in" prompt above the input box
+    let customCSS = `
+      sign-in-nudge { display: none !important; }
+    `;
+
+    // The hamburger button has nested <div>s that a regex cannot balance
+    if (removeHeader) {
+      customCSS += `
+        .side-nav-menu-button { display: none !important; }
+      `;
+    }
+
     finalHtml = this.injectStyles(finalHtml, {
       baseUrl: this.baseUrl,
-      customCSS: '',
+      customCSS,
     });
 
     return {

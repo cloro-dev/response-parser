@@ -16,12 +16,6 @@ export class CopilotProvider extends BaseProvider {
   removeHeader(html: string): string {
     let cleaned = html;
 
-    // Remove backstage-chats (hidden navbar element)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*relative shrink-0 min-h-14[^"]*"[^>]*data-testid="backstage-chats"[^>]*>.*?<\/div>/gis, '');
-
-    // Remove date divider (e.g., "Today" with horizontal line)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*flex items-center px-6 mx-auto w-full max-w-chat[^"]*"[^>]*>.*?<span[^>]*data-testid="date-divider"[^>]*>.*?<\/span>.*?<div[^>]*class="[^"]*border-t-\[1px\][^"]*"[^>]*>.*?<\/div>.*?<\/div>/gis, '');
-
     // Remove settings wrapper (share/settings buttons in top-right corner)
     cleaned = cleaned.replace(/<div[^>]*class="[^"]*absolute flex end-6 origin-top-right flex-col items-end[^"]*"[^>]*data-testid="settings-wrapper"[^>]*>.*?<\/div><\/div>/gis, '');
 
@@ -75,13 +69,9 @@ export class CopilotProvider extends BaseProvider {
    * Remove Copilot sidebar from HTML
    */
   removeSidebar(html: string): string {
-    let cleaned = html;
-
-    // Remove the sidebar container (everything between bg-sidebar-light wrapper and <main>)
-    // Handles both old layout (absolute h-full w-0) and new layout (flex h-full overflow-hidden bg-sidebar-light)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*bg-sidebar-light[^"]*"[^>]*>[\s\S]*?(?=<main)/gi, '');
-
-    return cleaned;
+    // Handled with CSS in parse(). The sidebar shares a flex wrapper with
+    // <main>, and a regex removes the opening tag of that wrapper.
+    return html;
   }
 
   parse(response: any, options?: ParseOptions): ParsedResponse {
@@ -131,7 +121,17 @@ export class CopilotProvider extends BaseProvider {
 
     if (removeHeader) {
       customCSS += `
-        [data-testid="sticky-header"] { display: none !important; }
+        [data-testid="sticky-header"],
+        [data-testid="backstage-chats"],
+        div:has(> div > [data-testid="date-divider"]) {
+          display: none !important;
+        }
+      `;
+    }
+
+    if (options?.removeSidebar) {
+      customCSS += `
+        div:has(> #sidebar-container) { display: none !important; }
       `;
     }
 
