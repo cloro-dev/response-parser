@@ -236,6 +236,10 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ## What's Changed
 
+### v0.5.1
+
+- ✅ **Fixed** ChatGPT `removeSources` now hides the open sources dialog of the mobile page
+
 ### v0.5.0
 
 - ✅ **Fixed** `require("@cloro-dev/response-parser")` failed with `exports is not defined`. The CommonJS build is now `dist/index.cjs`

@@ -149,9 +149,11 @@ export class ChatGPTProvider extends BaseProvider {
 
     if (options?.removeSources) {
       customCSS += `
-        /* Side flyout, and the modal sheet that replaces it on narrow pages */
+        /* Side flyout, the modal sheet that replaces it on narrow pages, and
+           the sources dialog of the mobile page */
         [data-testid="stage-thread-flyout"],
-        [data-sheet-travel-state] {
+        [data-sheet-travel-state],
+        #assistant-sources-dialog {
           display: none !important;
         }
       `;
