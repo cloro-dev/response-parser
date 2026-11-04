@@ -238,6 +238,11 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ## What's Changed
 
+### v0.5.2
+
+- ✅ **Fixed** The README said that the parser sanitizes HTML. It removes only `<script>` and `<noscript>` elements. A new Security note tells you to sanitize untrusted HTML before you render it
+- ✅ **Fixed** The `package.json` repository URL now points to `cloro-dev/response-parser`
+
 ### v0.5.1
 
 - ✅ **Fixed** ChatGPT `removeSources` now hides the open sources dialog of the mobile page
