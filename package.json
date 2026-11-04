@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cloro/response-parser.git"
+    "url": "https://github.com/cloro-dev/response-parser.git"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
