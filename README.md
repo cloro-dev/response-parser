@@ -342,33 +342,19 @@ pnpm lint
 
 ## Release
 
-1. Log in to npm with an account that can publish to `@cloro-dev`:
+The [Publish workflow](.github/workflows/publish.yml) publishes the package to npm when a version tag is pushed. It uses npm Trusted Publishing, so you do not need to log in to npm.
+
+1. Add an entry under "What's Changed".
+
+2. Increase the version. This changes `package.json` and creates a git commit and a `v` tag:
 
    ```bash
-   npm login
+   npm version patch   # 0.5.2 → 0.5.3
+   npm version minor   # 0.5.2 → 0.6.0
+   npm version major   # 0.5.2 → 1.0.0
    ```
 
-2. Run the checks and the build:
-
-   ```bash
-   pnpm type-check && pnpm lint && pnpm build
-   ```
-
-3. Increase the version. This changes `package.json` and creates a git commit and tag:
-
-   ```bash
-   npm version patch   # 0.4.5 → 0.4.6
-   npm version minor   # 0.4.5 → 0.5.0
-   npm version major   # 0.4.5 → 1.0.0
-   ```
-
-4. Publish. `prepublishOnly` builds the package again before the upload:
-
-   ```bash
-   npm publish
-   ```
-
-5. Push the commit and the tag, and add an entry under "What's Changed":
+3. Push the commit and the tag. The workflow type-checks, lints, builds and publishes:
 
    ```bash
    git push --follow-tags
