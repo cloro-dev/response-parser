@@ -1,0 +1,56 @@
+# Publishes the package to npm when a version tag (v0.5.2, v1.0.0) is pushed.
+#
+# npm Trusted Publishing gives the job a short-lived OIDC token. No NPM_TOKEN
+# is stored. Before the first tag, add a Trusted Publisher on
+# https://www.npmjs.com/package/@cloro-dev/response-parser/access with:
+#   organization: cloro-dev, repository: response-parser, workflow: publish.yml
+#
+# The tag must agree with `version` in package.json.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      # Required to get the OIDC token for Trusted Publishing and provenance.
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Trusted Publishing needs npm 11.5.1 or later. Node.js 24 includes it.
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Check that the tag agrees with the package version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not agree with version $version in package.json"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check and lint
+        run: pnpm type-check && pnpm lint
+
+      # prepublishOnly runs the build before the upload.
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public
