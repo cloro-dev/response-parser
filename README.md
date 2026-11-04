@@ -10,7 +10,7 @@ A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemin
 - 🔍 **Auto-Detection**: Automatically detects the AI provider from response structure
 - 🎨 **Built-in Styling**: Provider-specific styling
 - 🔧 **Framework-Agnostic**: Pure HTML output for any framework
-- 🔒 **Secure**: Automatic script sanitization
+- 🧹 **Script removal**: Removes `<script>` and `<noscript>` elements. This is not a full HTML sanitizer.
 - 📦 **TypeScript**: Full TypeScript support with comprehensive types
 - 🎯 **Lightweight**: No runtime dependencies for core parsing
 
@@ -26,7 +26,9 @@ pnpm add @cloro-dev/response-parser
 
 ## Quick Start
 
-This library parses AI responses and returns sanitized HTML strings. You can render the HTML in any framework:
+This library parses AI responses and returns HTML strings. You can render the HTML in any framework.
+
+> **Security**: The parser removes only `<script>` and `<noscript>` elements. It does not remove event handler attributes (for example `onerror=`) or `javascript:` URLs. If the HTML comes from a source that you do not trust, sanitize `parsed.html` with a full HTML sanitizer (for example [DOMPurify](https://github.com/cure53/DOMPurify)) before you render it.
 
 ```typescript
 import { parseAiResponse, detectProvider } from "@cloro-dev/response-parser";
@@ -36,7 +38,7 @@ const response = await fetchAIResponse();
 const parsed = parseAiResponse(response);
 
 console.log(parsed.provider); // 'CHATGPT' | 'GEMINI' | etc.
-console.log(parsed.html); // Sanitized HTML ready for rendering
+console.log(parsed.html); // HTML with <script> and <noscript> elements removed
 console.log(parsed.text); // Plain text version
 ```
 
@@ -306,7 +308,7 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ### v0.1.3
 
-- ✅ **Always sanitizes** HTML by default (removes scripts for security)
+- ✅ **Always removes** `<script>` and `<noscript>` elements from the HTML
 - ✅ **Always includes** provider-specific styles
 - ✅ **Always uses** provider's base URL for relative links
 - ❌ **Removed** `theme` option (styles are provider-specific)
