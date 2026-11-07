@@ -1,12 +1,12 @@
 # @cloro-dev/response-parser
 
-A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Copilot, Grok, and Google AI Overview/Mode.
+A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Grok, Google AI Overview/Mode, and Bing AI Mode.
 
 > **Framework-Agnostic**: This library returns HTML strings that can be rendered in any framework (React, Vue, Svelte, vanilla JS, etc.).
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, Copilot, AI Overview, AI Mode, Grok
+- 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, AI Overview, AI Mode, Bing AI Mode, Grok
 - 🔍 **Auto-Detection**: Automatically detects the AI provider from response structure
 - 🎨 **Built-in Styling**: Provider-specific styling
 - 🔧 **Framework-Agnostic**: Pure HTML output for any framework
@@ -147,8 +147,11 @@ type AIProvider =
   | 'COPILOT'
   | 'AIOVERVIEW'
   | 'AIMODE'
+  | 'BING_AIMODE'
   | 'GROK';
 ```
+
+`COPILOT` is deprecated: cloro discontinues its Copilot endpoint. Use `BING_AIMODE` for Bing's AI answers.
 
 ## Supported Providers
 
@@ -157,9 +160,10 @@ type AIProvider =
 | ChatGPT     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
 | Gemini      | ✅     | Sidebar, header, footer, sources removal                    |
 | Perplexity  | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
-| Copilot     | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
+| Copilot     | ⚠️ Deprecated | Sidebar, header, footer, sources removal, auto cookie banner hiding |
 | AI Overview | ✅     | Header, footer removal, WIZ data extraction                 |
 | AI Mode     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
+| Bing AI Mode | ✅    | Renders the whole answer (from the answer frame's `srcdoc`); header (reasoning panel) and sources removal |
 | Grok        | ✅     | Sources removal, auto cookie banner hiding                  |
 
 ## Common Use Cases

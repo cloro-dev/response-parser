@@ -1,6 +1,10 @@
 import { BaseProvider } from './base-provider';
 import { AIProvider, ParsedResponse, ParseOptions, ContentExtraction, ProviderMetadata } from '../core/types';
 
+/**
+ * @deprecated cloro discontinues its Copilot endpoint. For Bing's AI answers,
+ * use `BingAiModeProvider` (`BING_AIMODE`).
+ */
 export class CopilotProvider extends BaseProvider {
   readonly name: AIProvider = 'COPILOT';
   readonly baseUrl = 'https://copilot.microsoft.com';
