@@ -1,8 +1,8 @@
 {
   "name": "@cloro-dev/response-parser",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "type": "module",
-  "description": "Parse and render AI model responses from ChatGPT, Gemini, Perplexity, and more",
+  "description": "Parse and render AI model responses from ChatGPT, Gemini, Perplexity, Google AI Mode, Bing AI Mode, and more",
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "chatgpt",
     "gemini",
     "perplexity",
-    "copilot",
+    "bing",
     "html-parser",
     "typescript",
     "framework-agnostic"

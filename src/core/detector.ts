@@ -73,6 +73,19 @@ export class ProviderDetector {
         return html.includes('ho072b');
       },
     ],
+    BING_AIMODE: [
+      // Check for the Bing AI Mode chat canvas
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('b_cs_canvas');
+      },
+      // Check for the answer container, in the shell's srcdoc or in the
+      // answer document itself
+      (response: any) => {
+        const html = response?.result?.html || response?.html || '';
+        return html.includes('gs_temp_content');
+      },
+    ],
     GROK: [
       // Check for Grok domain
       (response: any) => {
@@ -98,6 +111,7 @@ export class ProviderDetector {
       COPILOT: 0,
       AIOVERVIEW: 0,
       AIMODE: 0,
+      BING_AIMODE: 0,
       GROK: 0,
     };
 

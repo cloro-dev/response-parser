@@ -2,9 +2,11 @@ export type AIProvider =
   | 'CHATGPT'
   | 'GEMINI'
   | 'PERPLEXITY'
+  /** @deprecated cloro discontinues its Copilot endpoint. Use `BING_AIMODE` for Bing's AI answers. */
   | 'COPILOT'
   | 'AIOVERVIEW'
   | 'AIMODE'
+  | 'BING_AIMODE'
   | 'GROK';
 
 export interface ParsedResponse {
