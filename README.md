@@ -115,6 +115,7 @@ Parse an AI response with auto-detected provider.
 - `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`; `true` for AI Overview & AI Mode. ChatGPT, Perplexity, Gemini, Copilot, Grok, AI Overview & AI Mode)
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & AI Mode)
 - `removeSources`: `boolean` - Remove sources/references panel (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & Grok)
+- `invertColors`: `boolean` - Invert the colors of the page. A light page becomes dark and a dark page becomes light. Images, videos and other media keep their colors (default: `false`, all providers)
 
 > **Note:** Cookie/privacy banners are automatically removed for ChatGPT, AI Mode, Copilot, Grok, and Perplexity — no option needed. Sign-in prompts are automatically removed for Gemini and Perplexity.
 
@@ -189,6 +190,18 @@ const parsed = parseAiResponse(response, {
 });
 ```
 
+### Invert Colors
+
+The engines return pages in a light or a dark theme. Set `invertColors` to show a page in the other theme.
+
+```typescript
+const parsed = parseAiResponse(response, {
+  invertColors: true, // Light page becomes dark, dark page becomes light
+});
+```
+
+The parser adds a CSS `filter` to the `<html>` element. It does not detect the theme of the page. The option applies to `parseAiResponse`, `parser.parse` and `parser.parseWithProvider`. It does not apply when you call a provider class (for example `new ChatGPTProvider().parse()`) directly.
+
 ### Manual Provider Specification
 
 ```typescript
@@ -241,6 +254,11 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### v0.7.0
+
+- ✅ **Added** `invertColors` option for all providers. It inverts the colors of the page, and images and videos keep their colors. `metadata.colorsInverted` is `true` when the option is applied
+- ✅ **Fixed** The ChatGPT mobile web page showed its answer text dark on a dark background when the viewer's browser is in dark mode. The parser now keeps pages that use Lightning CSS color variables in their light theme
 
 ### v0.5.3
 

@@ -23,6 +23,7 @@ export interface ParseOptions {
   removeFooter?: boolean;
   removeSidebar?: boolean;
   removeSources?: boolean;
+  invertColors?: boolean;
 }
 
 export interface ProviderConfig {
@@ -58,6 +59,7 @@ export interface ProviderMetadata {
   linksRemoved?: boolean;
   cookieBannerRemoved?: boolean;
   sourcesRemoved?: boolean;
+  colorsInverted?: boolean;
   detectionConfidence?: number;
 }
 
