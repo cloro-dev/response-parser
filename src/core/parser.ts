@@ -9,6 +9,82 @@ import { AIModeProvider } from '../providers/ai-mode';
 import { BingAiModeProvider } from '../providers/bing-ai-mode';
 import { GrokProvider } from '../providers/grok';
 
+/**
+ * Inverts the colors of the page with a CSS filter on the root element. The
+ * filter is applied again to images, videos and other media, so that they keep
+ * their colors. This includes elements with an inline `url(...)` style, for
+ * example the Gemini YouTube thumbnail, which is a `<div>` with
+ * `style="background-image: url(...)"`. `hue-rotate(180deg)` keeps hues near
+ * the original values, for example blue links stay blue.
+ *
+ * The white background is for pages that have no background of their own. In
+ * an iframe, such a page shows the background of the iframe, which the filter
+ * does not change, and the inverted (white) text is not visible. The rule has
+ * no `!important`, so the background of the page wins when it has one.
+ */
+const INVERT_COLORS_CSS = `
+  html {
+    background-color: #fff;
+    filter: invert(1) hue-rotate(180deg) !important;
+  }
+  img, video, canvas, iframe, embed, object, [style*="url("] {
+    filter: invert(1) hue-rotate(180deg) !important;
+  }
+`;
+
+/**
+ * Keeps pages in their light theme when the viewer's browser is in dark mode.
+ *
+ * Pages built with Lightning CSS (for example the ChatGPT mobile web page)
+ * emulate `light-dark()` with the `--lightningcss-light` and
+ * `--lightningcss-dark` variables, which a `prefers-color-scheme: dark` media
+ * query switches. The page then gets a dark background, but some text keeps
+ * its light-theme color (#0d0d0d), and the text is not visible. These rules
+ * keep the light values. They have no effect on pages that do not use these
+ * variables.
+ */
+const LIGHT_SCHEME_CSS = `
+  *, ::before, ::after {
+    --lightningcss-light: initial !important;
+    --lightningcss-dark: !important;
+  }
+`;
+
+/**
+ * Adds a style at the start of the head, before the styles of the page, so
+ * that the page can set its own background.
+ */
+function addStyle(html: string, css: string): string {
+  const style = `<style>${css}</style>`;
+  if (/<head(\s[^>]*)?>/i.test(html)) {
+    return html.replace(/(<head(\s[^>]*)?>)/i, `$1${style}`);
+  }
+  if (/<html[^>]*>/i.test(html)) {
+    return html.replace(/(<html[^>]*>)/i, `$1<head>${style}</head>`);
+  }
+  return `${style}${html}`;
+}
+
+/**
+ * Adds the color styles that apply to all providers.
+ */
+function applyColorStyles(
+  parsed: ParsedResponse,
+  options?: ParseOptions
+): ParsedResponse {
+  if (!parsed.html) {
+    return parsed;
+  }
+  if (!options?.invertColors) {
+    return { ...parsed, html: addStyle(parsed.html, LIGHT_SCHEME_CSS) };
+  }
+  return {
+    ...parsed,
+    html: addStyle(parsed.html, LIGHT_SCHEME_CSS + INVERT_COLORS_CSS),
+    metadata: { ...parsed.metadata, colorsInverted: true },
+  };
+}
+
 export class AIResponseParser {
   private providers: Map<AIProvider, any> = new Map();
 
@@ -31,7 +107,8 @@ export class AIResponseParser {
 
     if (!detection) {
       // Try to parse as generic HTML if no provider detected
-      return this.parseGeneric(response);
+      const generic = this.parseGeneric(response);
+      return generic && applyColorStyles(generic, options);
     }
 
     const provider = this.providers.get(detection.provider);
@@ -40,7 +117,7 @@ export class AIResponseParser {
     }
 
     try {
-      const parsed = provider.parse(response, options);
+      const parsed = applyColorStyles(provider.parse(response, options), options);
       return {
         ...parsed,
         metadata: {
@@ -68,7 +145,7 @@ export class AIResponseParser {
     }
 
     try {
-      return providerInstance.parse(response, options);
+      return applyColorStyles(providerInstance.parse(response, options), options);
     } catch (error) {
       console.error(`Failed to parse response with ${provider}:`, error);
       return null;
