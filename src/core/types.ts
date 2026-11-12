@@ -1,6 +1,7 @@
 export type AIProvider =
   | 'CHATGPT'
   | 'GEMINI'
+  /** @deprecated cloro discontinues its Perplexity endpoint. */
   | 'PERPLEXITY'
   /** @deprecated cloro discontinues its Copilot endpoint. Use `BING_AIMODE` for Bing's AI answers. */
   | 'COPILOT'

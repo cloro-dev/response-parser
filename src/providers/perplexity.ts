@@ -7,6 +7,9 @@ import {
   ProviderMetadata,
 } from "../core/types";
 
+/**
+ * @deprecated cloro discontinues its Perplexity endpoint.
+ */
 export class PerplexityProvider extends BaseProvider {
   readonly name: AIProvider = "PERPLEXITY";
   readonly baseUrl = "https://www.perplexity.ai";
