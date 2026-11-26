@@ -255,6 +255,10 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 
 ## What's Changed
 
+### v0.7.3
+
+- ✅ **Fixed** ChatGPT `removeHeader`, `removeFooter` and `removeSidebar` now work on the mobile web page. Before, the login card and an empty sidebar column stayed, and `removeSidebar` cut off the left part of the prompt box
+
 ### v0.7.0
 
 - ✅ **Added** `invertColors` option for all providers. It inverts the colors of the page, and images and videos keep their colors. `metadata.colorsInverted` is `true` when the option is applied

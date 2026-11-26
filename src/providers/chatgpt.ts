@@ -52,12 +52,12 @@ export class ChatGPTProvider extends BaseProvider {
   }
 
   /**
-   * Remove ChatGPT sidebar from HTML
+   * Remove ChatGPT sidebar from HTML.
+   * Handled with CSS in parse(). A regex cannot balance the nested <nav>s of
+   * the sidebar, and the composer of the mobile-web page has a <nav> too.
    */
   removeSidebar(html: string): string {
-    // The sidebar wrapper is hidden with CSS in parse(). Its nested <div>s
-    // cannot be balanced with a regex.
-    return html.replace(/<nav[^>]*>.*?<\/nav>/gis, "");
+    return html;
   }
 
   /**
@@ -130,8 +130,25 @@ export class ChatGPTProvider extends BaseProvider {
     // Build CSS overrides conditionally based on which remove* options are active
     let customCSS = '';
 
+    // The mobile-web page (octane) has other markup than the desktop page.
+    // Its parts are the ds-* and data-slot attributes below.
+    if (options?.removeHeader) {
+      customCSS += `
+        [data-ds-top-chrome] { display: none !important; }
+      `;
+    }
+
     if (options?.removeSidebar) {
       customCSS += `
+        div:has(> #ds-sidebar) { display: none !important; }
+        main[data-slot="conversation"] {
+          margin-left: 0 !important;
+          width: auto !important;
+        }
+        footer[data-ds-composer] {
+          left: 0 !important;
+          width: auto !important;
+        }
         #stage-slideover-sidebar { display: none !important; }
         [data-sidebar-item] { display: none !important; }
         [data-skip-to-content] { display: none !important; }
@@ -143,6 +160,7 @@ export class ChatGPTProvider extends BaseProvider {
       customCSS += `
         #thread-bottom-container { display: none !important; }
         form[data-type="unified-composer"] { display: none !important; }
+        footer[data-ds-composer] { display: none !important; }
         #thread { min-height: auto !important; }
       `;
     }
