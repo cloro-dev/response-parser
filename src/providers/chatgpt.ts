@@ -143,11 +143,12 @@ export class ChatGPTProvider extends BaseProvider {
         div:has(> #ds-sidebar) { display: none !important; }
         main[data-slot="conversation"] {
           margin-left: 0 !important;
-          width: auto !important;
+          left: 0 !important;
+          width: 100vw !important;
         }
         footer[data-ds-composer] {
           left: 0 !important;
-          width: auto !important;
+          width: 100% !important;
         }
         #stage-slideover-sidebar { display: none !important; }
         [data-sidebar-item] { display: none !important; }
