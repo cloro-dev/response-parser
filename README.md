@@ -1,12 +1,12 @@
 # @cloro-dev/response-parser
 
-A powerful TypeScript library for parsing AI model responses from ChatGPT, Gemini, Perplexity, Grok, Google AI Overview/Mode, and Bing AI Mode.
+A TypeScript library that parses and renders AI answers from ChatGPT, Google AI Overview, Google AI Mode, Gemini and Bing AI Mode, as [cloro](https://cloro.dev) returns them. cloro is the API for AI answers.
 
 > **Framework-Agnostic**: This library returns HTML strings that can be rendered in any framework (React, Vue, Svelte, vanilla JS, etc.).
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: ChatGPT, Gemini, Perplexity, AI Overview, AI Mode, Bing AI Mode, Grok
+- 🤖 **Multi-Provider Support**: ChatGPT, Google AI Overview, Google AI Mode, Gemini and Bing AI Mode. Stored Perplexity, Copilot and Grok responses still render
 - 🔍 **Auto-Detection**: Automatically detects the AI provider from response structure
 - 🎨 **Built-in Styling**: Provider-specific styling
 - 🔧 **Framework-Agnostic**: Pure HTML output for any framework
@@ -152,7 +152,7 @@ type AIProvider =
   | 'GROK';
 ```
 
-`COPILOT` is deprecated: cloro discontinues its Copilot endpoint. Use `BING_AIMODE` for Bing's AI answers.
+`PERPLEXITY`, `COPILOT` and `GROK` are for stored responses only: cloro discontinued those endpoints. Use `BING_AIMODE` for Bing's AI answers.
 
 ## Supported Providers
 
@@ -160,12 +160,12 @@ type AIProvider =
 | ----------- | ------ | ----------------------------------------------------------- |
 | ChatGPT     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
 | Gemini      | ✅     | Sidebar, header, footer, sources removal                    |
-| Perplexity  | ✅     | Sidebar, header, footer, sources removal, auto cookie banner hiding |
+| Perplexity  | ⚠️ Deprecated | Sidebar, header, footer, sources removal, auto cookie banner hiding |
 | Copilot     | ⚠️ Deprecated | Sidebar, header, footer, sources removal, auto cookie banner hiding |
 | AI Overview | ✅     | Header, footer removal, WIZ data extraction                 |
 | AI Mode     | ✅     | Sidebar, header, footer removal, auto cookie banner hiding  |
 | Bing AI Mode | ✅    | Renders the whole answer (from the answer frame's `srcdoc`); header (reasoning panel) and sources removal |
-| Grok        | ✅     | Sources removal, auto cookie banner hiding                  |
+| Grok        | ⚠️ Deprecated | Sources removal, auto cookie banner hiding                  |
 
 ## Common Use Cases
 

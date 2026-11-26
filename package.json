@@ -1,8 +1,8 @@
 {
   "name": "@cloro-dev/response-parser",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
-  "description": "Parse and render AI model responses from ChatGPT, Gemini, Google AI Mode, Bing AI Mode, and more",
+  "description": "Parse and render AI answers from ChatGPT, Google AI Overview, Google AI Mode, Gemini and Bing AI Mode",
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
