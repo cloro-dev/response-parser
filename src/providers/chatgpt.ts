@@ -52,12 +52,12 @@ export class ChatGPTProvider extends BaseProvider {
   }
 
   /**
-   * Remove ChatGPT sidebar from HTML
+   * Remove ChatGPT sidebar from HTML.
+   * Handled with CSS in parse(). A regex cannot balance the nested <nav>s of
+   * the sidebar, and the composer of the mobile-web page has a <nav> too.
    */
   removeSidebar(html: string): string {
-    // The sidebar wrapper is hidden with CSS in parse(). Its nested <div>s
-    // cannot be balanced with a regex.
-    return html.replace(/<nav[^>]*>.*?<\/nav>/gis, "");
+    return html;
   }
 
   /**
@@ -85,6 +85,20 @@ export class ChatGPTProvider extends BaseProvider {
     return html;
   }
 
+  /**
+   * Show a page in its light theme. Some pages are captured in the dark
+   * theme (`<html class="dark" style="color-scheme: dark">`), and the light
+   * Lightning CSS values that the parser keeps then make the text dark on a
+   * dark background.
+   */
+  useLightTheme(html: string): string {
+    return html.replace(/<html\b[^>]*>/i, (tag) =>
+      tag
+        .replace(/(\sclass="[^"]*?)\bdark\b/i, "$1light")
+        .replace(/color-scheme:\s*dark/i, "color-scheme: light")
+    );
+  }
+
   parse(response: any, options?: ParseOptions): ParsedResponse {
     const { html, text } = this.extractContent(response);
 
@@ -101,6 +115,8 @@ export class ChatGPTProvider extends BaseProvider {
 
     // Always remove cookie banner
     finalHtml = this.removeCookieBanner(finalHtml);
+
+    finalHtml = this.useLightTheme(finalHtml);
 
     // Remove header if requested
     if (options?.removeHeader) {
@@ -127,11 +143,46 @@ export class ChatGPTProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Build CSS overrides conditionally based on which remove* options are active
-    let customCSS = '';
+    // Always hide the login cards in the answer. Always use the light
+    // value of light-dark() colors: a part of the answer can set
+    // `color-scheme: dark` on a light page, and its text is then white.
+    let customCSS = `
+      [data-conversation-inline-beacon],
+      [data-testid="inline-upsell-card"] { display: none !important; }
+      * { color-scheme: light !important; }
+    `;
+
+    // The mobile-web page (octane) has other markup than the desktop page.
+    // Its parts are the ds-* and data-slot attributes below.
+    if (options?.removeHeader) {
+      customCSS += `
+        [data-ds-top-chrome] { display: none !important; }
+      `;
+    }
+
+    if (!options?.removeSidebar) {
+      // Below 800 px the mobile-web page shows the sidebar as a drawer over
+      // the answer. The capture has the drawer open, but on the live page it
+      // stays closed until you open it.
+      customCSS += `
+        @media (max-width: 799.98px) {
+          div:has(> #ds-sidebar) { display: none !important; }
+        }
+      `;
+    }
 
     if (options?.removeSidebar) {
       customCSS += `
+        div:has(> #ds-sidebar) { display: none !important; }
+        main[data-slot="conversation"] {
+          margin-left: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+        }
+        footer[data-ds-composer] {
+          left: 0 !important;
+          width: 100% !important;
+        }
         #stage-slideover-sidebar { display: none !important; }
         [data-sidebar-item] { display: none !important; }
         [data-skip-to-content] { display: none !important; }
@@ -143,6 +194,7 @@ export class ChatGPTProvider extends BaseProvider {
       customCSS += `
         #thread-bottom-container { display: none !important; }
         form[data-type="unified-composer"] { display: none !important; }
+        footer[data-ds-composer] { display: none !important; }
         #thread { min-height: auto !important; }
       `;
     }
