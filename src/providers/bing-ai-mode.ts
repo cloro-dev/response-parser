@@ -46,8 +46,10 @@ export class BingAiModeProvider extends BaseProvider {
   addQuery(html: string, query: string | null): string {
     if (!query) return html;
     const bubble = `<div class="cloro_bing_query">${query}</div>`;
+    // A function, because a replacement string reads "$1" in the query (as
+    // in "$150") as the matched <body> tag.
     return /<body\b[^>]*>/i.test(html)
-      ? html.replace(/(<body\b[^>]*>)/i, `$1${bubble}`)
+      ? html.replace(/<body\b[^>]*>/i, (body) => body + bubble)
       : bubble + html;
   }
 

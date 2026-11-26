@@ -95,11 +95,14 @@ export abstract class BaseProvider {
   }
 
   /**
-   * Remove all links from HTML, keeping the text content
+   * Remove the href of each link and keep the <a> element. Pages style their
+   * layout and fonts on the <a> elements (Bing Search, the Gemini header),
+   * and break when the elements are gone.
    */
   removeLinks(html: string): string {
-    // Replace anchor tags with their text content
-    return html.replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gim, '$1');
+    return html.replace(/<a\b[^>]*>/gi, (tag) =>
+      tag.replace(/\s(href|ping)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    );
   }
 
   /**

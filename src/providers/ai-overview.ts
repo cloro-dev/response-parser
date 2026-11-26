@@ -85,7 +85,8 @@ export class AIOverviewProvider extends BaseProvider {
         header, #header, #searchform, .sfbg, #appbar,
         div[role="navigation"], #leftnav, #sidetogether,
         [role="banner"], .Fgvgjc, #hdtb, .hdtb-msb,
-        .DZ13He, .wYq63b, .eT9Cje, .bNg8Rb, .S6VXfe, .Lu57id {
+        .DZ13He, .wYq63b, .eT9Cje, .bNg8Rb, .S6VXfe, .Lu57id,
+        #cnt > div > .ym1pid:empty {
           display: none !important;
         }
       `;

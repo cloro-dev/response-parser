@@ -99,9 +99,18 @@ export class GeminiProvider extends BaseProvider {
       finalHtml = this.removeLinks(finalHtml);
     }
 
-    // Always-on: hide the "Sign in" prompt above the input box
+    // Always-on: hide the "Sign in" prompt above the input box, and the
+    // menus and tooltips that were open when the page was captured (the
+    // input box covers a menu at the bottom of the page).
     let customCSS = `
       sign-in-nudge { display: none !important; }
+      .cdk-overlay-container,
+      .cdk-overlay-popover { display: none !important; }
+      /* Below 560 px the header links (About Gemini, Subscriptions, For
+         Business, Sign in) cover the Gemini logo. */
+      @media (max-width: 559.98px) {
+        top-bar-actions { display: none !important; }
+      }
     `;
 
     // The hamburger button has nested <div>s that a regex cannot balance

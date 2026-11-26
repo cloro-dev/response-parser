@@ -110,7 +110,7 @@ Parse an AI response with auto-detected provider.
 
 **Options:**
 
-- `removeLinks`: `boolean` - Remove all hyperlinks from HTML (default: `false`)
+- `removeLinks`: `boolean` - Make all hyperlinks in the HTML not clickable. The parser removes the `href` and keeps the link text and its style (default: `false`)
 - `removeHeader`: `boolean` - Remove navigation bar/header (default: `false`; `true` for AI Overview & AI Mode. ChatGPT, Perplexity, Gemini, Copilot, Grok, AI Overview & AI Mode)
 - `removeFooter`: `boolean` - Remove follow-up input box/footer (default: `false`; `true` for AI Overview & AI Mode. ChatGPT, Perplexity, Gemini, Copilot, Grok, AI Overview & AI Mode)
 - `removeSidebar`: `boolean` - Remove sidebar (default: `false`, ChatGPT, Gemini, Perplexity, Copilot & AI Mode)
@@ -175,7 +175,7 @@ type AIProvider =
 import { parseAiResponse } from "@cloro-dev/response-parser";
 
 const parsed = parseAiResponse(response, {
-  removeLinks: true, // Removes all <a> tags, keeps text
+  removeLinks: true, // Removes the href of all links, keeps the text
 });
 ```
 
@@ -258,6 +258,15 @@ The core parsing logic is identical - you just need to handle the HTML rendering
 ### v0.7.3
 
 - ✅ **Fixed** ChatGPT `removeHeader`, `removeFooter` and `removeSidebar` now work on the mobile web page. Before, the login card and an empty sidebar column stayed, and `removeSidebar` cut off the left part of the prompt box
+- ✅ **Fixed** ChatGPT pages captured in the dark theme showed dark text on a dark background. The parser now shows ChatGPT pages in their light theme
+- ✅ **Fixed** ChatGPT answer parts that set a dark color scheme on a light page showed white text on a white background
+- ✅ **Fixed** The ChatGPT login cards in the answer ("Log in for advice and recommendations…") are now always hidden
+- ✅ **Fixed** When the ChatGPT mobile web page is less than 800 px wide and `removeSidebar` is off, the open sidebar no longer covers the answer
+- ✅ **Fixed** A Bing AI Mode question with `$1` in it (for example "under $150") lost those characters and got a second `<body>` tag
+- ✅ **Fixed** Gemini `removeFooter` no longer shows a menu that was open when the page was captured. Menus and tooltips are now always hidden
+- ✅ **Fixed** When the Gemini page is less than 560 px wide, the header links no longer cover the logo
+- ✅ **Fixed** Google News `removeHeader` now hides the line below the header
+- ✅ **Changed** `removeLinks` now removes the `href` of each link and keeps the `<a>` element, so the page keeps its layout and fonts. Before, it removed the `<a>` elements, which broke the Bing Search page and the Gemini header. ChatGPT is not changed
 
 ### v0.7.0
 
