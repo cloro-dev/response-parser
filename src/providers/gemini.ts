@@ -1,5 +1,6 @@
 import { BaseProvider } from './base-provider';
 import { AIProvider, ParsedResponse, ParseOptions, ContentExtraction, ProviderMetadata } from '../core/types';
+import { removeBlocks } from '../core/html';
 
 export class GeminiProvider extends BaseProvider {
   readonly name: AIProvider = 'GEMINI';
@@ -17,13 +18,15 @@ export class GeminiProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove the Google navbar with boqOnegoogleliteOgbOneGoogleBar class
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*boqOnegoogleliteOgbOneGoogleBar[^"]*"[^>]*>.*?<\/div><\/div><\/div><\/div>/gis, '');
+    cleaned = removeBlocks(cleaned, 'div', (tag) => /class="[^"]*boqOnegoogleliteOgbOneGoogleBar/i.test(tag), [
+      '</div></div></div></div>',
+    ]);
 
     // Remove top-bar-actions (About Gemini, Gemini App, Subscriptions, For Business links)
-    cleaned = cleaned.replace(/<top-bar-actions[^>]*>.*?<\/top-bar-actions>/gis, '');
+    cleaned = removeBlocks(cleaned, 'top-bar-actions', () => true, ['</top-bar-actions>']);
 
     // Remove desktop-ogb-buffer
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*desktop-ogb-buffer[^"]*"[^>]*><\/div>/gis, '');
+    cleaned = cleaned.replace(/<div[^<>]*><\/div>/gi, (div) => (/class="[^"]*desktop-ogb-buffer/i.test(div) ? '' : div));
 
     return cleaned;
   }
@@ -33,7 +36,7 @@ export class GeminiProvider extends BaseProvider {
    */
   removeFooter(html: string): string {
     // Remove input-container (text input, upload button, send button, disclaimer)
-    return html.replace(/<input-container[^>]*>.*?<\/input-container>/gis, '');
+    return removeBlocks(html, 'input-container', () => true, ['</input-container>']);
   }
 
   /**
@@ -41,7 +44,7 @@ export class GeminiProvider extends BaseProvider {
    */
   removeSidebar(html: string): string {
     // Remove bard-sidenav element
-    return html.replace(/<bard-sidenav[^>]*>.*?<\/bard-sidenav>/gis, '');
+    return removeBlocks(html, 'bard-sidenav', () => true, ['</bard-sidenav>']);
   }
 
   /**
@@ -51,10 +54,10 @@ export class GeminiProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove the context-sidebar element (contains source cards)
-    cleaned = cleaned.replace(/<context-sidebar[^>]*>[\s\S]*?<\/context-sidebar>/gi, '');
+    cleaned = removeBlocks(cleaned, 'context-sidebar', () => true, ['</context-sidebar>']);
 
     // Remove the sources-sidebar-button trigger
-    cleaned = cleaned.replace(/<sources-sidebar-button[^>]*>[\s\S]*?<\/sources-sidebar-button>/gi, '');
+    cleaned = removeBlocks(cleaned, 'sources-sidebar-button', () => true, ['</sources-sidebar-button>']);
 
     return cleaned;
   }

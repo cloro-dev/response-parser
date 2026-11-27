@@ -6,6 +6,7 @@ import {
   ContentExtraction,
   ProviderMetadata,
 } from "../core/types";
+import { removeBlocks } from '../core/html';
 
 export class GrokProvider extends BaseProvider {
   readonly name: AIProvider = "GROK";
@@ -66,7 +67,10 @@ export class GrokProvider extends BaseProvider {
     // Sources panel removal via regex (CSS selectors don't reliably hide this element)
     if (options?.removeSources) {
       // Remove the sources panel wrapper containing the aside
-      finalHtml = finalHtml.replace(/<div[^>]*class="[^"]*h-dvh[^"]*flex-shrink-0[^"]*max-w-[^"]*"[^>]*>[\s\S]*?<\/aside>[\s\S]*?(?=<section)/gi, '');
+      finalHtml = removeBlocks(finalHtml, 'div', (tag) => /class="[^"]*h-dvh[^"]*flex-shrink-0[^"]*max-w-/i.test(tag), [
+        '</aside>',
+        { before: '<section' },
+      ]);
 
       // Hide the inline "N sources" trigger button and vaul-drawer overlay via CSS
       stylesToInject += `

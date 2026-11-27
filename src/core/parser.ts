@@ -8,6 +8,7 @@ import { AIOverviewProvider } from '../providers/ai-overview';
 import { AIModeProvider } from '../providers/ai-mode';
 import { BingAiModeProvider } from '../providers/bing-ai-mode';
 import { GrokProvider } from '../providers/grok';
+import { removeScripts } from './html';
 
 /**
  * Inverts the colors of the page with a CSS filter on the root element. The
@@ -56,11 +57,11 @@ const LIGHT_SCHEME_CSS = `
  */
 function addStyle(html: string, css: string): string {
   const style = `<style>${css}</style>`;
-  if (/<head(\s[^>]*)?>/i.test(html)) {
-    return html.replace(/(<head(\s[^>]*)?>)/i, `$1${style}`);
+  if (/<head(\s[^<>]*)?>/i.test(html)) {
+    return html.replace(/(<head(\s[^<>]*)?>)/i, `$1${style}`);
   }
-  if (/<html[^>]*>/i.test(html)) {
-    return html.replace(/(<html[^>]*>)/i, `$1<head>${style}</head>`);
+  if (/<html[^<>]*>/i.test(html)) {
+    return html.replace(/(<html[^<>]*>)/i, `$1<head>${style}</head>`);
   }
   return `${style}${html}`;
 }
@@ -178,11 +179,7 @@ export class AIResponseParser {
     }
 
     // Basic sanitization
-    let sanitizedHtml = html;
-    if (sanitizedHtml) {
-      sanitizedHtml = sanitizedHtml.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gim, '');
-      sanitizedHtml = sanitizedHtml.replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
-    }
+    const sanitizedHtml = html ? removeScripts(html) : html;
 
     return {
       provider: 'CHATGPT' as AIProvider, // Default to ChatGPT for unknown
