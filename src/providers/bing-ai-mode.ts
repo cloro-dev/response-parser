@@ -42,10 +42,10 @@ export class BingAiModeProvider extends BaseProvider {
     let tag: RegExpExecArray | null;
     while ((tag = tags.exec(html)) !== null) {
       if (!/class="ca_userquery_text"/i.test(tag[0])) continue;
-      const text = /([^<]*)<\/div>/iy;
-      text.lastIndex = tags.lastIndex;
-      const found = text.exec(html);
-      if (found) return found[1].trim();
+      const end = html.indexOf('<', tags.lastIndex);
+      if (end !== -1 && html.slice(end, end + 6).toLowerCase() === '</div>') {
+        return html.slice(tags.lastIndex, end).trim();
+      }
     }
     return null;
   }
