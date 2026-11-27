@@ -6,6 +6,7 @@ import {
   ContentExtraction,
   ProviderMetadata,
 } from "../core/types";
+import { removeBlocks } from '../core/html';
 
 export class ChatGPTProvider extends BaseProvider {
   readonly name: AIProvider = "CHATGPT";
@@ -23,7 +24,7 @@ export class ChatGPTProvider extends BaseProvider {
   removeLinks(html: string): string {
     // Replace anchor tags with span tags, keeping all attributes except href/alt/rel/target
     return html
-      .replace(/<a\b([^>]*)>/gi, (match, attributes) => {
+      .replace(/<a\b([^<>]*)>/gi, (match, attributes) => {
         // Remove link-specific attributes but keep others (class, style, etc.)
         const cleanedAttrs = attributes
           .replace(/\s+href\s*=\s*["'][^"']*["']/gi, "")
@@ -43,9 +44,11 @@ export class ChatGPTProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove page header by id
-    cleaned = cleaned.replace(
-      /<header[^>]*id="page-header"[^>]*>.*?<\/header>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "header",
+      (tag) => /id="page-header"/i.test(tag),
+      ["</header>"]
     );
 
     return cleaned;
@@ -74,7 +77,10 @@ export class ChatGPTProvider extends BaseProvider {
    */
   removeCookieBanner(html: string): string {
     // Remove the cookie dialog banner (matched by cookie-policy URL, language-agnostic)
-    return html.replace(/<div[^>]*role="dialog"[^>]*>[\s\S]*?openai\.com\/policies\/cookie-policy[\s\S]*?<\/div><\/div><\/div><\/div><\/div><\/div>/gi, '');
+    return removeBlocks(html, 'div', (tag) => /role="dialog"/i.test(tag), [
+      'openai.com/policies/cookie-policy',
+      '</div></div></div></div></div></div>',
+    ]);
   }
 
   /**
@@ -92,7 +98,7 @@ export class ChatGPTProvider extends BaseProvider {
    * dark background.
    */
   useLightTheme(html: string): string {
-    return html.replace(/<html\b[^>]*>/i, (tag) =>
+    return html.replace(/<html\b[^<>]*>/i, (tag) =>
       tag
         .replace(/(\sclass="[^"]*?)\bdark\b/i, "$1light")
         .replace(/color-scheme:\s*dark/i, "color-scheme: light")

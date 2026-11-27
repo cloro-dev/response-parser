@@ -28,7 +28,7 @@ pnpm add @cloro-dev/response-parser
 
 This library parses AI responses and returns HTML strings. You can render the HTML in any framework.
 
-> **Security**: The parser removes only `<script>` and `<noscript>` elements. It does not remove event handler attributes (for example `onerror=`) or `javascript:` URLs. If the HTML comes from a source that you do not trust, sanitize `parsed.html` with a full HTML sanitizer (for example [DOMPurify](https://github.com/cure53/DOMPurify)) before you render it.
+> **Security**: The parser removes only `<script>` and `<noscript>` elements. It does not remove event handler attributes (for example `onerror=`) or `javascript:` URLs. If the HTML comes from a source that you do not trust, sanitize `parsed.html` with a full HTML sanitizer (for example [DOMPurify](https://github.com/cure53/DOMPurify)) before you render it, or show it in an `<iframe>` with a `sandbox` attribute that does not include `allow-scripts`.
 
 ```typescript
 import { parseAiResponse, detectProvider } from "@cloro-dev/response-parser";
@@ -254,6 +254,11 @@ console.log("Detected:", parsed.provider);
 The core parsing logic is identical - you just need to handle the HTML rendering yourself in your framework of choice.
 
 ## What's Changed
+
+### v0.7.4
+
+- ✅ **Fixed** Some cleanup patterns were slow on crafted pages (CodeQL `js/polynomial-redos`). For example, 60 KB of `<div class="ca_userquery_text"` took 27 s with `BING_AIMODE`, and 234 KB of `<div class="` took 37 s with `COPILOT`. All patterns now read the page a fixed number of times, and a 300 KB crafted page takes less than 0.1 s. The output for normal pages does not change
+- ✅ **Fixed** Script removal now also removes end tags with spaces or attributes (`</script >`). Before, such an end tag let a `<script>` element stay, or made the removal include the text up to the next `</script>`. A `<script` or `</script` that stays after the removal, for example from `<scr<script></script>ipt>`, becomes `&lt;script`. This is still not a full HTML sanitizer: see the Security note
 
 ### v0.7.3
 

@@ -1,4 +1,5 @@
 import { AIProvider, ParsedResponse, ParseOptions, StyleOptions, ContentExtraction, extractContentCommon } from '../core/types';
+import { removeScripts } from '../core/html';
 
 export abstract class BaseProvider {
   abstract readonly name: AIProvider;
@@ -53,7 +54,7 @@ export abstract class BaseProvider {
         );
       } else {
         styledHtml = styledHtml.replace(
-          /(<html[^>]*>)/i,
+          /(<html[^<>]*>)/i,
           `$1<head><base href="${options.baseUrl}"></head>`,
         );
       }
@@ -66,7 +67,7 @@ export abstract class BaseProvider {
       styledHtml = styledHtml.replace('<head>', `<head><style>${styles}</style>`);
     } else if (styles) {
       styledHtml = styledHtml.replace(
-        /(<html[^>]*>)/i,
+        /(<html[^<>]*>)/i,
         `$1<head><style>${styles}</style></head>`,
       );
     }
@@ -78,13 +79,7 @@ export abstract class BaseProvider {
    * Sanitize HTML content
    */
   sanitizeHtml(html: string): string {
-    // Remove scripts
-    let sanitized = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gim, '');
-
-    // Remove noscript tags
-    sanitized = sanitized.replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
-
-    return sanitized;
+    return removeScripts(html);
   }
 
   /**
@@ -100,7 +95,7 @@ export abstract class BaseProvider {
    * and break when the elements are gone.
    */
   removeLinks(html: string): string {
-    return html.replace(/<a\b[^>]*>/gi, (tag) =>
+    return html.replace(/<a\b[^<>]*>/gi, (tag) =>
       tag.replace(/\s(href|ping)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
     );
   }

@@ -25,7 +25,7 @@ export class BingAiModeProvider extends BaseProvider {
    * has no such frame (for example, when it is already the answer document).
    */
   answerDocument(html: string): string {
-    const match = /<iframe\b[^>]*\ssrcdoc="([^"]*)"/i.exec(html);
+    const match = /<iframe\b[^<>]*\ssrcdoc="([^"]*)"/i.exec(html);
     if (!match) return html;
     return match[1]
       .replace(/&quot;/g, '"')
@@ -38,8 +38,16 @@ export class BingAiModeProvider extends BaseProvider {
 
   /** The prompt, from the question bubble in the shell. */
   userQuery(html: string): string | null {
-    const match = /<div\b[^>]*class="ca_userquery_text"[^>]*>([^<]*)<\/div>/i.exec(html);
-    return match ? match[1].trim() : null;
+    const tags = /<div\b[^<>]*>/gi;
+    let tag: RegExpExecArray | null;
+    while ((tag = tags.exec(html)) !== null) {
+      if (!/class="ca_userquery_text"/i.test(tag[0])) continue;
+      const text = /([^<]*)<\/div>/iy;
+      text.lastIndex = tags.lastIndex;
+      const found = text.exec(html);
+      if (found) return found[1].trim();
+    }
+    return null;
   }
 
   /** Put the question above the answer, as the shell shows it. */
@@ -48,8 +56,8 @@ export class BingAiModeProvider extends BaseProvider {
     const bubble = `<div class="cloro_bing_query">${query}</div>`;
     // A function, because a replacement string reads "$1" in the query (as
     // in "$150") as the matched <body> tag.
-    return /<body\b[^>]*>/i.test(html)
-      ? html.replace(/<body\b[^>]*>/i, (body) => body + bubble)
+    return /<body\b[^<>]*>/i.test(html)
+      ? html.replace(/<body\b[^<>]*>/i, (body) => body + bubble)
       : bubble + html;
   }
 

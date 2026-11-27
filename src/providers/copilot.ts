@@ -1,5 +1,6 @@
 import { BaseProvider } from './base-provider';
 import { AIProvider, ParsedResponse, ParseOptions, ContentExtraction, ProviderMetadata } from '../core/types';
+import { removeBlocks } from '../core/html';
 
 /**
  * @deprecated cloro discontinues its Copilot endpoint. For Bing's AI answers,
@@ -21,7 +22,14 @@ export class CopilotProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove settings wrapper (share/settings buttons in top-right corner)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*absolute flex end-6 origin-top-right flex-col items-end[^"]*"[^>]*data-testid="settings-wrapper"[^>]*>.*?<\/div><\/div>/gis, '');
+    cleaned = removeBlocks(
+      cleaned,
+      'div',
+      (tag) =>
+        /class="[^"]*absolute flex end-6 origin-top-right flex-col items-end/i.test(tag) &&
+        /data-testid="settings-wrapper"/i.test(tag),
+      ['</div></div>'],
+    );
 
     return cleaned;
   }
@@ -35,13 +43,25 @@ export class CopilotProvider extends BaseProvider {
     // Remove the composer (input box at bottom)
     // Starts with: <div class="absolute bottom-0 w-full">
     // Contains: file input, composer content with textarea, buttons (home, attach, chat mode, audio call)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*absolute bottom-0 w-full[^"]*"[^>]*>.*?<\/div><\/div><\/div><\/div><\/div><\/div><\/div><\/div><\/div><\/div><\/div><\/div>/gis, '');
+    cleaned = removeBlocks(cleaned, 'div', (tag) => /class="[^"]*absolute bottom-0 w-full/i.test(tag), [
+      '</div>'.repeat(12),
+    ]);
 
     // Remove spacer div for composer height
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*mt-\[var\(--composer-container-height\)\][^"]*"[^>]*><\/div>/gis, '');
+    cleaned = cleaned.replace(/<div[^<>]*><\/div>/gi, (div) =>
+      /class="[^"]*mt-\[var\(--composer-container-height\)\]/i.test(div) ? '' : div,
+    );
 
     // Remove "scroll to bottom" button (full container with button and inner content)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*pointer-events-none absolute flex justify-center z-20 inset-x-0 bottom-\[calc\(var\(--composer-container-height\)\+1rem\)\][^"]*"[^>]*>.*?<button[^>]*data-testid="scroll-to-bottom-button"[^>]*>.*?<\/button><\/div>/gis, '');
+    cleaned = removeBlocks(
+      cleaned,
+      'div',
+      (tag) =>
+        /class="[^"]*pointer-events-none absolute flex justify-center z-20 inset-x-0 bottom-\[calc\(var\(--composer-container-height\)\+1rem\)\]/i.test(
+          tag,
+        ),
+      [/<button[^<>]*data-testid="scroll-to-bottom-button"[^<>]*>/gi, '</button></div>'],
+    );
 
     return cleaned;
   }
@@ -53,10 +73,20 @@ export class CopilotProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove cookie banner by id
-    cleaned = cleaned.replace(/<div[^>]*id="cookie-banner"[^>]*>.*?<\/div>.*?<\/div>.*?<\/div>.*?<\/div>/gis, '');
+    cleaned = removeBlocks(cleaned, 'div', (tag) => /id="cookie-banner"/i.test(tag), [
+      '</div>',
+      '</div>',
+      '</div>',
+      '</div>',
+    ]);
 
     // Remove cookie banner by max-w-cookie-banner class (outer container)
-    cleaned = cleaned.replace(/<div[^>]*class="[^"]*max-w-cookie-banner[^"]*"[^>]*>.*?<\/div>.*?<\/div>.*?<\/div>.*?<\/div>/gis, '');
+    cleaned = removeBlocks(cleaned, 'div', (tag) => /class="[^"]*max-w-cookie-banner/i.test(tag), [
+      '</div>',
+      '</div>',
+      '</div>',
+      '</div>',
+    ]);
 
     return cleaned;
   }
@@ -66,7 +96,14 @@ export class CopilotProvider extends BaseProvider {
    */
   removeSources(html: string): string {
     // Remove the references panel (right-side panel with variable width containing citations)
-    return html.replace(/<div[^>]*class="[^"]*relative h-full overflow-hidden will-change-auto[^"]*"[^>]*style="[^"]*width:\s*\d+px[^"]*"[^>]*>[\s\S]*?(?=<div[^>]*class="[^"]*pointer-events-none (?:fixed|absolute)[^"]*")/gi, '');
+    return removeBlocks(
+      html,
+      'div',
+      (tag) =>
+        /class="[^"]*relative h-full overflow-hidden will-change-auto/i.test(tag) &&
+        /style="[^"]*width:\s*\d+px/i.test(tag),
+      [{ before: /<div[^<>]*class="[^"<>]*pointer-events-none (?:fixed|absolute)[^"<>]*"/gi }],
+    );
   }
 
   /**

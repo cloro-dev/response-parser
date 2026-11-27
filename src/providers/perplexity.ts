@@ -6,6 +6,7 @@ import {
   ContentExtraction,
   ProviderMetadata,
 } from "../core/types";
+import { removeBlocks } from '../core/html';
 
 /**
  * @deprecated cloro discontinues its Perplexity endpoint.
@@ -24,10 +25,9 @@ export class PerplexityProvider extends BaseProvider {
   removeHeader(html: string): string {
     // Remove navbar by targeting the unique @container/header class
     // Matches from the navbar opening div through the border divider at the bottom
-    return html.replace(
-      /<div[^>]*class="[^"]*@container\/header[^"]*"[^>]*>.*?<div[^>]*class="[^"]*absolute bottom-0 inset-x-0 border-b[^"]*"[^>]*><\/div>/gis,
-      ""
-    );
+    return removeBlocks(html, "div", (tag) => /class="[^"]*@container\/header/i.test(tag), [
+      /<div[^<>]*class="[^"<>]*absolute bottom-0 inset-x-0 border-b[^"<>]*"[^<>]*><\/div>/gi,
+    ]);
   }
 
   /**
@@ -46,10 +46,10 @@ export class PerplexityProvider extends BaseProvider {
   removeSidebar(html: string): string {
     let cleaned = html;
     // Remove the sidebar nav element and its width-holder parent
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*w-sideBarWidth[^"]*"[^>]*>[\s\S]*?<\/nav>[\s\S]*?<\/div>/gi,
-      ""
-    );
+    cleaned = removeBlocks(cleaned, "div", (tag) => /class="[^"]*w-sideBarWidth/i.test(tag), [
+      "</nav>",
+      "</div>",
+    ]);
     return cleaned;
   }
 

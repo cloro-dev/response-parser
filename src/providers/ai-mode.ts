@@ -6,6 +6,7 @@ import {
   ContentExtraction,
   ProviderMetadata,
 } from "../core/types";
+import { removeBlocks } from '../core/html';
 
 export class AIModeProvider extends BaseProvider {
   readonly name: AIProvider = "AIMODE";
@@ -25,9 +26,11 @@ export class AIModeProvider extends BaseProvider {
     // Starts with <div jsname="oEQ3x" class="DZ13He YNk70c EjQTId">
     // Contains the Filters and Topics navigation (AI Mode, All, Images, Videos, News, More)
     // Ends with closing divs after <hr class="e9c7U">
-    cleaned = cleaned.replace(
-      /<div[^>]*jsname="oEQ3x"[^>]*class="[^"]*DZ13He[^"]*"[^>]*>.*?<hr class="e9c7U">.*?<\/div><\/div><\/div><\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /jsname="oEQ3x"/i.test(tag) && /class="[^"]*DZ13He/i.test(tag),
+      ['<hr class="e9c7U">', "</div></div></div></div></div>"]
     );
 
     return cleaned;
@@ -42,27 +45,35 @@ export class AIModeProvider extends BaseProvider {
     // Remove the AI Mode input bar/footer
     // Target the most unique identifier: data-xid="aim-mars-input-plate"
     // This element is deeply nested, so we need to match many closing divs
-    cleaned = cleaned.replace(
-      /<div[^>]*data-xid="aim-mars-input-plate"[^>]*>[\s\S]*?<\/div><\/div><\/div><\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /data-xid="aim-mars-input-plate"/i.test(tag),
+      ["</div></div></div></div></div>"]
     );
 
     // Fallback: Target by jscontroller P5gZDb which wraps the input plate
-    cleaned = cleaned.replace(
-      /<div[^>]*jscontroller="P5gZDb"[^>]*>[\s\S]*?<\/div><\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /jscontroller="P5gZDb"/i.test(tag),
+      ["</div></div></div>"]
     );
 
     // Fallback: Target the t0ITR container
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*t0ITR hh3ttd[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /class="[^"]*t0ITR hh3ttd/i.test(tag),
+      ["</div></div>"]
     );
 
     // Fallback: Target outer y4VEUd vve6Ce wrapper
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*y4VEUd vve6Ce[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /class="[^"]*y4VEUd vve6Ce/i.test(tag),
+      ["</div></div>"]
     );
 
     return cleaned;
@@ -75,27 +86,28 @@ export class AIModeProvider extends BaseProvider {
     let cleaned = html;
 
     // Remove the AI Mode history panel/dialog
-    // Target by aria-label (handles both attribute orderings)
-    cleaned = cleaned.replace(
-      /<div[^>]*aria-label="AI Mode history"[^>]*class="[^"]*ho072b[^"]*"[^>]*>[\s\S]*?(?=<!--TgQPHd)/gi,
-      ""
-    );
-    // Fallback: class before aria-label
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*ho072b[^"]*"[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?(?=<!--TgQPHd)/gi,
-      ""
+    // Target by aria-label and class, in either order
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /aria-label="AI Mode history"/i.test(tag) && /class="[^"]*ho072b/i.test(tag),
+      [{ before: "<!--TgQPHd" }]
     );
 
     // Remove the floating action buttons (OEwhSe wrapper)
-    cleaned = cleaned.replace(
-      /<div[^>]*class="[^"]*OEwhSe[^"]*"[^>]*>[\s\S]*?<\/div><\/div>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "div",
+      (tag) => /class="[^"]*OEwhSe/i.test(tag),
+      ["</div></div>"]
     );
 
     // Remove buttons with aria-label
-    cleaned = cleaned.replace(
-      /<button[^>]*aria-label="AI Mode history"[^>]*>[\s\S]*?<\/button>/gis,
-      ""
+    cleaned = removeBlocks(
+      cleaned,
+      "button",
+      (tag) => /aria-label="AI Mode history"/i.test(tag),
+      ["</button>"]
     );
 
     return cleaned;

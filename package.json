@@ -1,6 +1,6 @@
 {
   "name": "@cloro-dev/response-parser",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "type": "module",
   "description": "Parse and render AI answers from ChatGPT, Google AI Overview, Google AI Mode, Gemini and Bing AI Mode",
   "main": "dist/index.cjs",
@@ -22,6 +22,7 @@
     "dev": "rollup -c -w",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
+    "test": "npm run build && node --test \"test/*.test.mjs\"",
     "prepublishOnly": "npm run build",
     "prepare": "husky"
   },
